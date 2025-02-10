@@ -10,8 +10,13 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "sonarqube": "sonarqube-scanner",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+<<<<<<< HEAD
     "test:frontend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.js",
     "test:backend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.backend.config.js"
+=======
+    "test:frontend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.cjs",
+    "test:backend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.backend.config.cjs"
+>>>>>>> 872596b41e5a67432b885857c00f6e7add60aa07
   },
   "keywords": [],
   "author": "RP",
@@ -45,5 +50,20 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "sonarqube-scanner": "^3.3.0"
+<<<<<<< HEAD
+=======
+  },
+  "jest": {
+    "testEnvironment": "jest-environment-jsdom",
+    "moduleNameMapper": {
+      "\\.(css|scss)$": "identity-obj-proxy"
+    },
+    "testPathIgnorePatterns": [
+      "/tests-examples/demo-todo-app.spec.js"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(styleMock\\.js)$)"
+    ]
+>>>>>>> 872596b41e5a67432b885857c00f6e7add60aa07
   }
 }

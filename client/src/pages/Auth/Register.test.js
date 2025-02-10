@@ -22,6 +22,7 @@ jest.mock("../../context/search", () => ({
     useSearch: jest.fn(() => [{ keyword: "" }, jest.fn()]), // Mock useSearch hook to return null state and a mock function
 }));
 
+<<<<<<< HEAD
 // Object.defineProperty(window, "localStorage", {
 //     value: {
 //         setItem: jest.fn(),
@@ -30,6 +31,18 @@ jest.mock("../../context/search", () => ({
 //     },
 //     writable: true,
 // });
+=======
+jest.mock('../../hooks/useCategory', () => jest.fn(() => []));
+
+  Object.defineProperty(window, 'localStorage', {
+    value: {
+      setItem: jest.fn(),
+      getItem: jest.fn(),
+      removeItem: jest.fn(),
+    },
+    writable: true,
+  });
+>>>>>>> 872596b41e5a67432b885857c00f6e7add60aa07
 
 window.matchMedia =
     window.matchMedia ||
