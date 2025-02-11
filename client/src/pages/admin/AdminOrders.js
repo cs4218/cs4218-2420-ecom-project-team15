@@ -10,11 +10,11 @@ const { Option } = Select;
 
 const AdminOrders = () => {
   const [status, setStatus] = useState([
-    "Not Processed",
+    "Not Process",
     "Processing",
     "Shipped",
-    "Delivered",
-    "Cancelled",
+    "deliverd",
+    "cancel",
   ]);
   const [changeStatus, setCHangeStatus] = useState("");
   const [orders, setOrders] = useState([]);
