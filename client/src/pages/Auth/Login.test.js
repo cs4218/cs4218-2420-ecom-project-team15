@@ -19,11 +19,6 @@ jest.mock("../../context/cart", () => ({
     useCart: jest.fn(() => [null, jest.fn()]), // Mock useCart hook to return null state and a mock function
 }));
 
-<<<<<<< HEAD
-jest.mock("../../context/search", () => ({
-    useSearch: jest.fn(() => [{ keyword: "" }, jest.fn()]), // Mock useSearch hook to return null state and a mock function
-}));
-=======
 jest.mock('../../hooks/useCategory', () => jest.fn(() => []));
 
   Object.defineProperty(window, 'localStorage', {
@@ -34,7 +29,6 @@ jest.mock('../../hooks/useCategory', () => jest.fn(() => []));
     },
     writable: true,
   });
->>>>>>> 872596b41e5a67432b885857c00f6e7add60aa07
 
 // Object.defineProperty(window, "localStorage", {
 //     value: {
