@@ -47,6 +47,7 @@
     "sonarqube-scanner": "^3.5.0"
   },
   "jest": {
+    "setupFiles": ["<rootDir>/jest.setup.js"],
     "testEnvironment": "jest-environment-jsdom",
     "moduleNameMapper": {
       "\\.(css|scss)$": "identity-obj-proxy"
