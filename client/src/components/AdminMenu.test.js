@@ -4,7 +4,7 @@ import AdminMenu from "./AdminMenu";
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import "@testing-library/jest-dom/extend-expect";
 
-describe("Dashboard Component", () => {
+describe("AdminMenu Component", () => {
   it("should render with the create category, create product, products and orders navlinks", () => {
     const { getByText } = render(
       <MemoryRouter initialEntries={["/dashboard/admin"]}>

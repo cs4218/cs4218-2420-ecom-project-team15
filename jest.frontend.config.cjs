@@ -24,7 +24,7 @@ module.exports = {
 
   // jest code coverage
   collectCoverage: true,
-  collectCoverageFrom: ["client/src/pages/*/**", "client/src/components/AdminMenu.js"],
+  collectCoverageFrom: ["client/src/pages/*/**", "client/src/components/**"],
   coverageThreshold: {
     global: {
       lines: 100,
