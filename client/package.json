@@ -12,6 +12,7 @@
     "braintree-web-drop-in-react": "^1.2.1",
     "markbind-cli": "^5.5.2",
     "moment": "^2.30.1",
+    "nwsapi": "2.2.13",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
@@ -21,6 +22,9 @@
     "react-scripts": "5.0.1",
     "react-toastify": "^10.0.4",
     "web-vitals": "^2.1.4"
+  },
+  "overrides": {
+    "nwsapi": "2.2.13"
   },
   "scripts": {
     "start": "react-scripts start",
