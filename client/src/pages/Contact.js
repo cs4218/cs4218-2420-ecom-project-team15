@@ -19,13 +19,13 @@ const Contact = () => {
             available 24X7.  
           </p>
           <p className="mt-3">
-            www.help@ecommerceapp.com
+            <BiMailSend /> : www.help@ecommerceapp.com
           </p>
           <p className="mt-3">
-            012-3456789
+            <BiPhoneCall /> : 012-3456789
           </p>
           <p className="mt-3">
-            1800-0000-0000 (toll free)
+            <BiSupport /> : 1800-0000-0000 (toll free)
           </p>
         </div>
       </div>
