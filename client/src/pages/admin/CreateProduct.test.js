@@ -178,7 +178,7 @@ describe("CreateProduct Component", () => {
                 type: "image/jpeg",
             },
             category: "1",
-            shipping: "1",
+            shipping: "true",
         };
 
         const formDataToObject = (formData) => {
@@ -289,6 +289,28 @@ describe("CreateProduct Component", () => {
         expect(axios.get).toHaveBeenCalled();
         await waitFor(() => {
             expect(toast.error).toHaveBeenCalledWith("Something went wrong in getting category");
+        });
+    });
+
+    test("failure when getting categories", async () => {
+        axios.get.mockReset();
+        axios.get.mockResolvedValueOnce({
+            data: { success: false },
+        });
+
+        await act(async () => {
+            render(
+                <MemoryRouter initialEntries={["/admin/create-product"]}>
+                    <Routes>
+                        <Route path="/admin/create-product" element={<CreateProduct />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        });
+
+        expect(axios.get).toHaveBeenCalled();
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith("Failed to get categories");
         });
     });
 

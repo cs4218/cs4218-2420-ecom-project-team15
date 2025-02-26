@@ -214,12 +214,12 @@ const UpdateProduct = () => {
                   showSearch
                   className="form-select mb-3"
                   onChange={(value) => {
-                    setShipping(value === "1" ? true : false);
+                    setShipping(value);
                   }}
-                  value={shipping ? "1" : "0"}
+                  value={shipping}
                 > 
-                  <Option value="0">No</Option>
-                  <Option value="1">Yes</Option>
+                  <Option value={false}>No</Option>
+                  <Option value={true}>Yes</Option>
                 </Select>
               </div>
               <div className="mb-3">

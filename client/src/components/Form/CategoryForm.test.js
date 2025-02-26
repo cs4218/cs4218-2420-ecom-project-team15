@@ -5,8 +5,8 @@ import CategoryForm from "./CategoryForm";
 import "@testing-library/jest-dom/extend-expect";
 
 describe("CategoryForm Component", () => {
-    const mockHandleSubmit = jest.fn();
-    const mockSetValue = jest.fn(); 
+    const mockHandleSubmit = jest.fn(e => e.preventDefault());
+    const mockSetValue = jest.fn();
 
     beforeEach(() => {
         render(

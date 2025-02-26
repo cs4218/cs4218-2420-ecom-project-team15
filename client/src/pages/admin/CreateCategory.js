@@ -102,7 +102,7 @@ const CreateCategory = () => {
                 handleSubmit={handleSubmit}
                 value={name}
                 setValue={setName}
-              />
+            />
             </div>
             <div className="w-75">
               <table className="table">
