@@ -11,7 +11,7 @@ describe("Database Connection", () => {
         jest.clearAllMocks();
     });
 
-    test("should connect to MongoDB successfully", async () => {
+    it("should connect to MongoDB successfully", async () => {
         process.env.MONGO_URL = "mongodb://mocked-url:27017/test";
         mongoose.connect.mockResolvedValue({ connection: { host: "localhost" } });
 
@@ -25,7 +25,7 @@ describe("Database Connection", () => {
         consoleSpy.mockRestore();
     });
 
-    test("should handle MongoDB connection error", async () => {
+    it("should handle MongoDB connection error", async () => {
         const error = new Error("Connection failed");
         process.env.MONGO_URL = "mongodb://mocked-url:27017/test";
         mongoose.connect.mockRejectedValue(error);
@@ -40,7 +40,7 @@ describe("Database Connection", () => {
         consoleSpy.mockRestore();
     });
 
-    test("should handle null connection string", async () => {
+    it("should handle null connection string", async () => {
         delete process.env.MONGO_URL; // Make mongo url null
 
         const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
@@ -52,7 +52,7 @@ describe("Database Connection", () => {
         consoleSpy.mockRestore();
     });
 
-    test("should handle empty connection string", async () => {
+    it("should handle empty connection string", async () => {
         process.env.MONGO_URL = "";
 
         const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
