@@ -16,7 +16,7 @@ var gateway = new braintree.BraintreeGateway({
   publicKey: process.env.BRAINTREE_PUBLIC_KEY,
   privateKey: process.env.BRAINTREE_PRIVATE_KEY,
 });
-console.log(gateway)
+
 export const createProductController = async (req, res) => {
   try {
     const { name, description, price, category, quantity, shipping } =

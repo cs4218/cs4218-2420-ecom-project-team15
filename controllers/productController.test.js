@@ -1,20 +1,25 @@
 import braintree from "braintree";
-import { brainTreePaymentController } from "./productController.js";
+import { brainTreePaymentController, braintreeTokenController } from "./productController.js";
 import orderModel from "../models/orderModel.js";
 
 jest.mock("braintree", () => {
   const mockSaleSingleton = jest.fn();
+  const mockGenerateSingleton = jest.fn();
 
   return {
     BraintreeGateway: jest.fn().mockImplementation(() => ({
       transaction: {
         sale: mockSaleSingleton,
       },
+      clientToken: {
+        generate: mockGenerateSingleton
+      }
     })),
     Environment: {
       Sandbox: "sandbox",
     },
     __mockSaleSingleton__: mockSaleSingleton, // Expose for test assertions
+    __mockGenerateSingleton: mockGenerateSingleton, // Expose for test assertions
   };
 });
 
@@ -28,6 +33,7 @@ jest.mock("../models/orderModel", () => {
 // This is to ensure that the jest function returned for the transaction.sale method
 // is the same for ALL braintree singletons.
 const mockSaleSingleton = braintree.__mockSaleSingleton__;
+const mockGenerateSingleton = braintree.__mockGenerateSingleton;
 
 describe("brainTreePaymentController", () => {
   let req, res;
@@ -107,6 +113,70 @@ describe("brainTreePaymentController", () => {
     });
 
     await brainTreePaymentController(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith(mockError);
+  });
+});
+
+
+describe("brainTreeTokenController", () => {
+  let req, res;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    req = {};
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+      send: jest.fn(),
+    };
+
+    process.env.BRAINTREE_MERCHANT_ID = "merchantId"
+    process.env.BRAINTREE_PUBLIC_KEY = "publicKey"
+    process.env.BRAINTREE_PRIVATE_KEY = "privateKey"
+  });
+
+  it("should successfully return the token", async () => {
+    const mockToken = { "token": "This is a braintree token" };
+
+
+    mockGenerateSingleton.mockImplementation((data, callback) => {
+      callback(null, mockToken); // Simulate success
+    });
+
+    await braintreeTokenController(req, res);
+
+    expect(mockGenerateSingleton).toHaveBeenCalledWith(
+      {},
+      expect.any(Function)
+    );
+    expect(res.send).toHaveBeenCalledWith(mockToken);
+  });
+
+  it("should return 500 generating the token fails", async () => {
+    const mockError = new Error("Token generation failed");
+
+    mockGenerateSingleton.mockImplementation((data, callback) => {
+      callback(mockError, null); // Simulate failure
+    });
+
+    await braintreeTokenController(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith(mockError);
+  });
+
+  it("should return 500 when a random error is thrown", async () => {
+    // Mock failed transaction response
+    const mockError = new Error("Random error");
+
+    mockGenerateSingleton.mockImplementation((data, callback) => {
+      console.log(mockError.message)
+      throw mockError
+    });
+
+    await braintreeTokenController(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith(mockError);
