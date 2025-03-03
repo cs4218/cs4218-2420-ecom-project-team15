@@ -51,6 +51,7 @@ const mockProduct = {
 describe("Admin View Products Tests", () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        jest.spyOn(console, "log").mockImplementation(() => {});
     });
 
     describe("createProductController", () => {
@@ -134,7 +135,7 @@ describe("Admin View Products Tests", () => {
             fs.readFileSync.mockReturnValue(mockBuffer);
             productModel.mockImplementation(() => ({
                 photo: mockPhoto,
-                save: jest.fn().mockRejectedValue("Error"),
+                save: jest.fn().mockRejectedValue("500 Internal Server Error"),
             }));
     
             await createProductController(mockProduct, mockResponse);
@@ -142,12 +143,9 @@ describe("Admin View Products Tests", () => {
             expect(mockResponse.send).toHaveBeenCalledWith({
                 success: false,
                 message: "Error while creating product",
-                error: "Error",
+                error: "500 Internal Server Error",
             });
-        });
-
-        it("should display error if photo cannot be read", async () => {
-
+            expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     
         it("should display error if name is empty", async () => {
@@ -226,7 +224,7 @@ describe("Admin View Products Tests", () => {
             };
     
             await createProductController(invalidProduct, mockResponse);
-            expect(mockResponse.status).toHaveBeenCalledWith(500);
+            expect(mockResponse.status).toHaveBeenCalledWith(400);
             expect(mockResponse.send).toHaveBeenCalledWith({
                 error: "Photo should be less then 1mb",
             });
@@ -249,7 +247,7 @@ describe("Admin View Products Tests", () => {
 
         it("should display an error if deleting a product fails", async () => {
             jest.spyOn(productModel, "findByIdAndDelete").mockImplementation(() => ({
-                select: jest.fn().mockRejectedValue("Cannot delete product"),
+                select: jest.fn().mockRejectedValue("500 Internal Server Error"),
             }));
 
             await expect(deleteProductController({ params: { pid: "test-product-id" } }, mockResponse));
@@ -257,8 +255,9 @@ describe("Admin View Products Tests", () => {
             expect(mockResponse.send).toHaveBeenCalledWith({
                 success: false,
                 message: "Error while deleting product",
-                error: "Cannot delete product",
+                error: "500 Internal Server Error",
             });
+            expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     });
 
@@ -465,7 +464,7 @@ describe("Admin View Products Tests", () => {
             fs.readFileSync.mockReturnValue(mockBuffer);
             jest.spyOn(productModel, "findByIdAndUpdate").mockReturnValue({
                 ...savedProduct,
-                save: jest.fn().mockRejectedValue("Error"),
+                save: jest.fn().mockRejectedValue("500 Internal Server Error"),
             });
 
             await updateProductController({ 
@@ -478,8 +477,9 @@ describe("Admin View Products Tests", () => {
             expect(mockResponse.send).toHaveBeenCalledWith({
                 success: false,
                 message: "Error while updating product",
-                error: "Error",
+                error: "500 Internal Server Error",
             });
+            expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     });
     

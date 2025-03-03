@@ -98,6 +98,7 @@ const mockProductList = [ {
 describe("Product Controller", () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        jest.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     describe("getProductController", () => {
@@ -124,7 +125,7 @@ describe("Product Controller", () => {
                 select: jest.fn().mockReturnThis(),
                 populate: jest.fn().mockReturnThis(),
                 limit: jest.fn().mockReturnThis(),
-                sort: jest.fn().mockRejectedValue(new Error("Cannot get products")),
+                sort: jest.fn().mockRejectedValue("500 Internal Server Error"),
             }));
 
             await expect(getProductController({}, mockResponse));
@@ -132,8 +133,9 @@ describe("Product Controller", () => {
             expect(mockResponse.send).toHaveBeenCalledWith({
                 success: false,
                 message: "Error in getting products",
-                error: "Cannot get products",
+                error: "500 Internal Server Error",
             });
+            expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     });
 
@@ -156,7 +158,7 @@ describe("Product Controller", () => {
         it("should display an error if getting a single product fails", async () => {
             jest.spyOn(productModel, "findOne").mockImplementation(() => ({
                 select: jest.fn().mockReturnThis(),
-                populate: jest.fn().mockRejectedValue("Cannot get product"),
+                populate: jest.fn().mockRejectedValue("500 Internal Server Error"),
             }));
 
             await expect(getSingleProductController({ params: { slug: "test-product" } }, mockResponse));
@@ -164,8 +166,10 @@ describe("Product Controller", () => {
             expect(mockResponse.send).toHaveBeenCalledWith({
                 success: false,
                 message: "Error while getting single product",
-                error: "Cannot get product",
+                error: "500 Internal Server Error",
             });
+
+            expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     });
 
@@ -205,7 +209,7 @@ describe("Product Controller", () => {
         it("should display an error if getting photo fails", async () => {
             fs.readFileSync.mockReturnValue(mockBuffer);
             jest.spyOn(productModel, "findById").mockImplementation(() => ({
-                select: jest.fn().mockRejectedValue("Cannot get photo"),
+                select: jest.fn().mockRejectedValue("500 Internal Server Error"),
             }));
 
             await expect(productPhotoController({ params: { pid: "test-product-id" } }, mockResponse));
@@ -213,8 +217,9 @@ describe("Product Controller", () => {
             expect(mockResponse.send).toHaveBeenCalledWith({
                 success: false,
                 message: "Error while getting photo",
-                error: "Cannot get photo",
+                error: "500 Internal Server Error",
             });
+            expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     });
 
@@ -257,14 +262,15 @@ describe("Product Controller", () => {
         });
 
         it("should display an error if filtering products fails", async () => {
-            jest.spyOn(productModel, "find").mockRejectedValue("Cannot filter products");
+            jest.spyOn(productModel, "find").mockRejectedValue("500 Internal Server Error");
             await expect(productFiltersController(mockFilters, mockResponse));
             expect(mockResponse.status).toHaveBeenCalledWith(400);
             expect(mockResponse.send).toHaveBeenCalledWith({
                 success: false,
                 message: "Error while filtering products",
-                error: "Cannot filter products",
+                error: "500 Internal Server Error",
             });
+            expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     });
 
@@ -283,7 +289,7 @@ describe("Product Controller", () => {
 
         it("should display an error if getting the total number of products fails", async () => {
             jest.spyOn(productModel, "find").mockImplementation(() => ({
-                estimatedDocumentCount: jest.fn().mockRejectedValue("Cannot get product count"),
+                estimatedDocumentCount: jest.fn().mockRejectedValue("500 Internal Server Error"),
             }));
 
             await expect(productCountController({}, mockResponse));
@@ -291,8 +297,9 @@ describe("Product Controller", () => {
             expect(mockResponse.send).toHaveBeenCalledWith({
                 success: false,
                 message: "Error in product count",
-                error: "Cannot get product count",
+                error: "500 Internal Server Error",
             });
+            expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     });
 
@@ -339,7 +346,7 @@ describe("Product Controller", () => {
                 select: jest.fn().mockReturnThis(),
                 skip: jest.fn().mockReturnThis(),
                 limit: jest.fn().mockReturnThis(),
-                sort: jest.fn().mockRejectedValue("Cannot list products"),
+                sort: jest.fn().mockRejectedValue("500 Internal Server Error"),
             }));
 
             await expect(productListController({ params: { page: 1 } }, mockResponse));
@@ -347,8 +354,9 @@ describe("Product Controller", () => {
             expect(mockResponse.send).toHaveBeenCalledWith({
                 success: false,
                 message: "error in per page ctrl",
-                error: "Cannot list products",
+                error: "500 Internal Server Error",
             });
+            expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     });
 });
