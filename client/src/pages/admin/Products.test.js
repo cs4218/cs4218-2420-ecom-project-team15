@@ -5,7 +5,7 @@
 import React from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import Products from './Products';
 import '@testing-library/jest-dom/extend-expect';
