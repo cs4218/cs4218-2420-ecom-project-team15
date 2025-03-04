@@ -55,8 +55,7 @@ const ProductDetails = () => {
           <h6>Name : {product.name}</h6>
           <h6>Description : {product.description}</h6>
           <h6>
-            Price :
-            {product?.price?.toLocaleString("en-US", {
+            Price : {product?.price?.toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
             })}
