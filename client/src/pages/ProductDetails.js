@@ -21,12 +21,20 @@ const ProductDetails = () => {
         `/api/v1/product/get-product/${params.slug}`
       );
       setProduct(data?.product);
-      getSimilarProduct(data?.product._id, data?.product.category._id);
+      //this code causes state changes while React is still rendering
+      //getSimilarProduct(data?.product._id, data?.product.category._id);
     } catch (error) {
       console.log(error);
     }
   };
   //get similar product
+  //ensures that getSimilarProduct update only happens after product is set
+  useEffect(() => {
+    if (product?._id && product?.category?._id) {
+      getSimilarProduct(product._id, product.category._id);
+    }
+  }, [product]);
+
   const getSimilarProduct = async (pid, cid) => {
     try {
       const { data } = await axios.get(
@@ -61,7 +69,7 @@ const ProductDetails = () => {
             })}
           </h6>
           <h6>Category : {product?.category?.name}</h6>
-          <button class="btn btn-secondary ms-1">ADD TO CART</button>
+          <button className="btn btn-secondary ms-1">ADD TO CART</button>
         </div>
       </div>
       <hr />

@@ -121,7 +121,7 @@ describe('ProductDetails Component', () => {
                     return Promise.resolve({ data: {} });
             }
         })
-        const { getByText } = render(<ProductDetails />);
+        render(<ProductDetails />);
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalledWith(`/api/v1/product/get-product/product-slug`);
         });
