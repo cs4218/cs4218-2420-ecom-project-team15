@@ -41,6 +41,7 @@ describe("CreateCategory Component", () => {
             });
 
             expect(screen.getByText("Electronics")).toBeInTheDocument();
+            expect(screen.getByText("Clothing")).toBeInTheDocument();
         });
 
         test("failed in getting categories", async () => {

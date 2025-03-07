@@ -430,11 +430,215 @@ describe("UpdateProduct Component", () => {
 
             await waitFor(() => expect(toast.error).toHaveBeenCalledWith("something went wrong"));
         });
-    });
 
-    // similar to create product tests
-    // TODO: BVA for numerical inputs
-    // TODO: decision tables for empty inputs 
+        // Equivalence partitioning for price field
+        test("price field > 0", async () => {
+            axios.put.mockResolvedValueOnce({
+                data: { success: true, message: "Product updated" },
+            });
+
+            await act(async () => {
+                render(
+                    <MemoryRouter initialEntries={["/admin/product/macbook"]}>
+                        <Routes>
+                            <Route path="/admin/product/:slug" element={<UpdateProduct />} />
+                        </Routes>
+                    </MemoryRouter>
+                )
+            });
+
+            fireEvent.change(screen.getByDisplayValue("100"), {
+                target: { value: 200 },
+            });
+
+            fireEvent.click(screen.getByText("UPDATE PRODUCT"));
+
+            await waitFor(() => expect(axios.put).toHaveBeenCalled());
+            expect(toast.success).toHaveBeenCalledWith("Product Updated Successfully");
+            expect(mockNavigate).toHaveBeenCalledWith("/dashboard/admin/products");
+        });
+    
+        test("error when price field is <= 0", async () => {
+            await act(async () => {
+                render(
+                    <MemoryRouter initialEntries={["/admin/product/macbook"]}>
+                        <Routes>
+                            <Route path="/admin/product/:slug" element={<UpdateProduct />} />
+                        </Routes>
+                    </MemoryRouter>
+                )
+            });
+
+            fireEvent.change(screen.getByDisplayValue("100"), {
+                target: { value: -1 },
+            });
+
+            fireEvent.click(screen.getByText("UPDATE PRODUCT"));
+
+            await waitFor(() => expect(toast.error).toHaveBeenCalledWith("Price must be greater than 0"));
+        });
+
+        // BVA for price field
+        test("price field is 0.01", async () => {
+            axios.put.mockResolvedValueOnce({
+                data: { success: true, message: "Product updated" },
+            });
+
+            await act(async () => {
+                render(
+                    <MemoryRouter initialEntries={["/admin/product/macbook"]}>
+                        <Routes>
+                            <Route path="/admin/product/:slug" element={<UpdateProduct />} />
+                        </Routes>
+                    </MemoryRouter>
+                )
+            });
+
+            fireEvent.change(screen.getByDisplayValue("100"), {
+                target: { value: 0.01 },
+            });
+
+            fireEvent.click(screen.getByText("UPDATE PRODUCT"));
+
+            await waitFor(() => expect(axios.put).toHaveBeenCalled());
+            expect(toast.success).toHaveBeenCalledWith("Product Updated Successfully");
+            expect(mockNavigate).toHaveBeenCalledWith("/dashboard/admin/products");
+        });
+
+        test("error when price field is = 0", async () => {
+            await act(async () => {
+                render(
+                    <MemoryRouter initialEntries={["/admin/product/macbook"]}>
+                        <Routes>
+                            <Route path="/admin/product/:slug" element={<UpdateProduct />} />
+                        </Routes>
+                    </MemoryRouter>
+                )
+            });
+
+            fireEvent.change(screen.getByDisplayValue("100"), {
+                target: { value: 0 },
+            });
+
+            fireEvent.click(screen.getByText("UPDATE PRODUCT"));
+
+            await waitFor(() => expect(toast.error).toHaveBeenCalledWith("Price must be greater than 0"));
+        });
+
+        // Equivalence partitioning for quantity field
+        test("quantity field > 0", async () => {
+            axios.put.mockResolvedValueOnce({
+                data: { success: true, message: "Product updated" },
+            });
+
+            await act(async () => {
+                render(
+                    <MemoryRouter initialEntries={["/admin/product/macbook"]}>
+                        <Routes>
+                            <Route path="/admin/product/:slug" element={<UpdateProduct />} />
+                        </Routes>
+                    </MemoryRouter>
+                )
+            });
+
+            fireEvent.change(screen.getByDisplayValue("100"), {
+                target: { value: 200 },
+            });
+
+            fireEvent.click(screen.getByText("UPDATE PRODUCT"));
+
+            await waitFor(() => expect(axios.put).toHaveBeenCalled());
+            expect(toast.success).toHaveBeenCalledWith("Product Updated Successfully");
+            expect(mockNavigate).toHaveBeenCalledWith("/dashboard/admin/products");
+        });
+    
+        test("error when quantity field is <= 0", async () => {
+            await act(async () => {
+                render(
+                    <MemoryRouter initialEntries={["/admin/product/macbook"]}>
+                        <Routes>
+                            <Route path="/admin/product/:slug" element={<UpdateProduct />} />
+                        </Routes>
+                    </MemoryRouter>
+                )
+            });
+
+            fireEvent.change(screen.getByDisplayValue("5"), {
+                target: { value: -1 },
+            });
+
+            fireEvent.click(screen.getByText("UPDATE PRODUCT"));
+
+            await waitFor(() => expect(toast.error).toHaveBeenCalledWith("Quantity must be greater than 0"));
+        });
+
+        // BVA for price field
+        test("quantity field is 0.01", async () => {
+            axios.put.mockResolvedValueOnce({
+                data: { success: true, message: "Product updated" },
+            });
+
+            await act(async () => {
+                render(
+                    <MemoryRouter initialEntries={["/admin/product/macbook"]}>
+                        <Routes>
+                            <Route path="/admin/product/:slug" element={<UpdateProduct />} />
+                        </Routes>
+                    </MemoryRouter>
+                )
+            });
+
+            fireEvent.change(screen.getByDisplayValue("5"), {
+                target: { value: 0.01 },
+            });
+
+            fireEvent.click(screen.getByText("UPDATE PRODUCT"));
+
+            await waitFor(() => expect(axios.put).toHaveBeenCalled());
+            expect(toast.success).toHaveBeenCalledWith("Product Updated Successfully");
+            expect(mockNavigate).toHaveBeenCalledWith("/dashboard/admin/products");
+        });
+
+        test("error when quantity field is = 0", async () => {
+            await act(async () => {
+                render(
+                    <MemoryRouter initialEntries={["/admin/product/macbook"]}>
+                        <Routes>
+                            <Route path="/admin/product/:slug" element={<UpdateProduct />} />
+                        </Routes>
+                    </MemoryRouter>
+                )
+            });
+
+            fireEvent.change(screen.getByDisplayValue("5"), {
+                target: { value: 0 },
+            });
+
+            fireEvent.click(screen.getByText("UPDATE PRODUCT"));
+
+            await waitFor(() => expect(toast.error).toHaveBeenCalledWith("Quantity must be greater than 0"));
+        });
+
+        test("error when required fields are empty", async () => {
+            await act(async () => {
+                render(
+                    <MemoryRouter initialEntries={["/admin/product/macbook"]}>
+                        <Routes>
+                            <Route path="/admin/product/:slug" element={<UpdateProduct />} />
+                        </Routes>
+                    </MemoryRouter>
+                )
+            });
+
+            fireEvent.change(screen.getByDisplayValue("Test Product"), {
+                target: { value: "" },
+            });
+
+            fireEvent.click(screen.getByText("UPDATE PRODUCT"));
+
+            await waitFor(() => expect(toast.error).toHaveBeenCalledWith("All fields are required"));
+        });
+    });
 
     describe("Deleting product information", () => {
         beforeEach(() => {

@@ -49,6 +49,18 @@ const CreateProduct = () => {
       productData.append("photo", photo);
       productData.append("category", category);
       productData.append("shipping", shipping);
+      if (price <= 0) {
+        toast.error("Price must be greater than 0");
+        return;
+      } 
+      if (quantity <= 0) {
+        toast.error("Quantity must be greater than 0");
+        return;
+      }
+      if (!name || !description || !price || !quantity || !category || !photo || shipping === "") {
+        toast.error("All fields are required");
+        return;
+      }
       const { data } = await axios.post(
         "/api/v1/product/create-product",
         productData

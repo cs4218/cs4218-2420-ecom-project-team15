@@ -109,7 +109,7 @@ describe("CreateProduct Component", () => {
         fireEvent.click(screen.getByText('Yes'));
 
         const file = new File(["photo"], "photo.jpg", { type: "image/jpeg" });
-        fireEvent.change(screen.getByText("Upload Photo"), { 
+        fireEvent.change(screen.getByLabelText("Upload Photo"), { 
             target: { files: [file] },
         });
 
@@ -119,7 +119,6 @@ describe("CreateProduct Component", () => {
         expect(toast.success).toHaveBeenCalledWith("Product Created Successfully");
         expect(mockNavigate).toHaveBeenCalledWith("/dashboard/admin/products");
     });
-
 
     test("correctly sends all form data when creating a product", async () => {
         axios.post.mockResolvedValueOnce({
@@ -242,7 +241,7 @@ describe("CreateProduct Component", () => {
         fireEvent.click(screen.getByText('Yes'));
         
         const file = new File(["photo"], "photo.jpg", { type: "image/jpeg" });
-        fireEvent.change(screen.getByText("Upload Photo"), { 
+        fireEvent.change(screen.getByLabelText("Upload Photo"), { 
             target: { files: [file] },
         });
 
@@ -252,8 +251,8 @@ describe("CreateProduct Component", () => {
         expect(toast.error).toHaveBeenCalledWith("Failed to create product");
     });
 
-    // TODO (decision table)
-    xtest("fails to create product when required fields are empty", async () => {
+    // Decision table testing for missing inputs into the form
+    test("fails to create product when name is empty", async () => {
         await act(async () => {
             render(
                 <MemoryRouter initialEntries={["/admin/create-product"]}>
@@ -264,13 +263,372 @@ describe("CreateProduct Component", () => {
             );
         });
 
+        fireEvent.change(screen.getByPlaceholderText("write a description"), {
+            target: { value: "Product Description" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a Price"), {
+            target: { value: 100 },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a quantity"), {
+            target: { value: 10 },
+        });
+
+        const categoryDropdown = screen.getAllByRole("combobox")[0];
+        fireEvent.mouseDown(categoryDropdown);
+        await waitFor(() => expect(screen.getByText('category1')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('category1'));
+
+        const shippingDropdown = screen.getAllByRole("combobox")[1];
+        fireEvent.mouseDown(shippingDropdown);
+        await waitFor(() => expect(screen.getByText('Yes')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('Yes'));
+        
+        const file = new File(["photo"], "photo.jpg", { type: "image/jpeg" });
+        fireEvent.change(screen.getByLabelText("Upload Photo"), { 
+            target: { files: [file] },
+        });
+
         fireEvent.click(screen.getByText("CREATE PRODUCT"));
 
         expect(axios.post).not.toHaveBeenCalled();
         expect(toast.error).toHaveBeenCalledWith("All fields are required");
     });
 
-    // TODO (BVA for numerical inputs)
+    test("fails to create product when photo is empty", async () => {
+        await act(async () => {
+            render(
+                <MemoryRouter initialEntries={["/admin/create-product"]}>
+                    <Routes>
+                        <Route path="/admin/create-product" element={<CreateProduct />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        });
+
+        fireEvent.change(screen.getByPlaceholderText("write a name"), {
+            target: { value: "Product Name" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a description"), {
+            target: { value: "Product Description" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a Price"), {
+            target: { value: 100 },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a quantity"), {
+            target: { value: 10 },
+        });
+
+        const categoryDropdown = screen.getAllByRole("combobox")[0];
+        fireEvent.mouseDown(categoryDropdown);
+        await waitFor(() => expect(screen.getByText('category1')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('category1'));
+
+        const shippingDropdown = screen.getAllByRole("combobox")[1];
+        fireEvent.mouseDown(shippingDropdown);
+        await waitFor(() => expect(screen.getByText('Yes')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('Yes'));
+
+        fireEvent.click(screen.getByText("CREATE PRODUCT"));
+
+        expect(axios.post).not.toHaveBeenCalled();
+        expect(toast.error).toHaveBeenCalledWith("All fields are required");
+    });
+
+    test("fails to create product when category is empty", async () => {
+        await act(async () => {
+            render(
+                <MemoryRouter initialEntries={["/admin/create-product"]}>
+                    <Routes>
+                        <Route path="/admin/create-product" element={<CreateProduct />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        });
+
+        fireEvent.change(screen.getByPlaceholderText("write a name"), {
+            target: { value: "Product Name" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a description"), {
+            target: { value: "Product Description" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a Price"), {
+            target: { value: 100 },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a quantity"), {
+            target: { value: 10 },
+        });
+
+        const shippingDropdown = screen.getAllByRole("combobox")[1];
+        fireEvent.mouseDown(shippingDropdown);
+        await waitFor(() => expect(screen.getByText('Yes')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('Yes'));
+        
+        const file = new File(["photo"], "photo.jpg", { type: "image/jpeg" });
+        fireEvent.change(screen.getByLabelText("Upload Photo"), { 
+            target: { files: [file] },
+        });
+
+        fireEvent.click(screen.getByText("CREATE PRODUCT"));
+
+        expect(axios.post).not.toHaveBeenCalled();
+        expect(toast.error).toHaveBeenCalledWith("All fields are required");
+    });
+
+    test("fails to create product when description is empty", async () => {
+        await act(async () => {
+            render(
+                <MemoryRouter initialEntries={["/admin/create-product"]}>
+                    <Routes>
+                        <Route path="/admin/create-product" element={<CreateProduct />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        });
+
+        fireEvent.change(screen.getByPlaceholderText("write a name"), {
+            target: { value: "Product Name" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a Price"), {
+            target: { value: 100 },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a quantity"), {
+            target: { value: 10 },
+        });
+
+        const categoryDropdown = screen.getAllByRole("combobox")[0];
+        fireEvent.mouseDown(categoryDropdown);
+        await waitFor(() => expect(screen.getByText('category1')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('category1'));
+
+        const shippingDropdown = screen.getAllByRole("combobox")[1];
+        fireEvent.mouseDown(shippingDropdown);
+        await waitFor(() => expect(screen.getByText('Yes')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('Yes'));
+        
+        const file = new File(["photo"], "photo.jpg", { type: "image/jpeg" });
+        fireEvent.change(screen.getByLabelText("Upload Photo"), { 
+            target: { files: [file] },
+        });
+
+        fireEvent.click(screen.getByText("CREATE PRODUCT"));
+
+        expect(axios.post).not.toHaveBeenCalled();
+        expect(toast.error).toHaveBeenCalledWith("All fields are required");
+    });
+
+    test("fails to create product when price is empty", async () => {
+        await act(async () => {
+            render(
+                <MemoryRouter initialEntries={["/admin/create-product"]}>
+                    <Routes>
+                        <Route path="/admin/create-product" element={<CreateProduct />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        });
+
+        fireEvent.change(screen.getByPlaceholderText("write a name"), {
+            target: { value: "Product Name" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a description"), {
+            target: { value: "Product Description" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a quantity"), {
+            target: { value: 10 },
+        });
+
+        const categoryDropdown = screen.getAllByRole("combobox")[0];
+        fireEvent.mouseDown(categoryDropdown);
+        await waitFor(() => expect(screen.getByText('category1')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('category1'));
+
+        const shippingDropdown = screen.getAllByRole("combobox")[1];
+        fireEvent.mouseDown(shippingDropdown);
+        await waitFor(() => expect(screen.getByText('Yes')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('Yes'));
+        
+        const file = new File(["photo"], "photo.jpg", { type: "image/jpeg" });
+        fireEvent.change(screen.getByLabelText("Upload Photo"), { 
+            target: { files: [file] },
+        });
+
+        fireEvent.click(screen.getByText("CREATE PRODUCT"));
+
+        expect(axios.post).not.toHaveBeenCalled();
+        expect(toast.error).toHaveBeenCalledWith("Price must be greater than 0");
+    });
+
+    test("fails to create product when quantity is empty", async () => {
+        await act(async () => {
+            render(
+                <MemoryRouter initialEntries={["/admin/create-product"]}>
+                    <Routes>
+                        <Route path="/admin/create-product" element={<CreateProduct />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        });
+
+        fireEvent.change(screen.getByPlaceholderText("write a name"), {
+            target: { value: "Product Name" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a description"), {
+            target: { value: "Product Description" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a Price"), {
+            target: { value: 100 },
+        });
+
+        const categoryDropdown = screen.getAllByRole("combobox")[0];
+        fireEvent.mouseDown(categoryDropdown);
+        await waitFor(() => expect(screen.getByText('category1')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('category1'));
+
+        const shippingDropdown = screen.getAllByRole("combobox")[1];
+        fireEvent.mouseDown(shippingDropdown);
+        await waitFor(() => expect(screen.getByText('Yes')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('Yes'));
+        
+        const file = new File(["photo"], "photo.jpg", { type: "image/jpeg" });
+        fireEvent.change(screen.getByLabelText("Upload Photo"), { 
+            target: { files: [file] },
+        });
+
+        fireEvent.click(screen.getByText("CREATE PRODUCT"));
+
+        expect(axios.post).not.toHaveBeenCalled();
+        expect(toast.error).toHaveBeenCalledWith("Quantity must be greater than 0");
+    });
+
+    test("fails to create product when shipping is empty", async () => {
+        await act(async () => {
+            render(
+                <MemoryRouter initialEntries={["/admin/create-product"]}>
+                    <Routes>
+                        <Route path="/admin/create-product" element={<CreateProduct />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        });
+
+        fireEvent.change(screen.getByPlaceholderText("write a name"), {
+            target: { value: "Product Name" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a description"), {
+            target: { value: "Product Description" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a Price"), {
+            target: { value: 100 },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a quantity"), {
+            target: { value: 10 },
+        });
+
+        const categoryDropdown = screen.getAllByRole("combobox")[0];
+        fireEvent.mouseDown(categoryDropdown);
+        await waitFor(() => expect(screen.getByText('category1')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('category1'));
+        
+        const file = new File(["photo"], "photo.jpg", { type: "image/jpeg" });
+        fireEvent.change(screen.getByLabelText("Upload Photo"), { 
+            target: { files: [file] },
+        });
+
+        fireEvent.click(screen.getByText("CREATE PRODUCT"));
+
+        expect(axios.post).not.toHaveBeenCalled();
+        expect(toast.error).toHaveBeenCalledWith("All fields are required");
+    });
+
+    test("fails to create product when price is less than or equal to 0", async () => {
+        await act(async () => {
+            render(
+                <MemoryRouter initialEntries={["/admin/create-product"]}>
+                    <Routes>
+                        <Route path="/admin/create-product" element={<CreateProduct />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        });
+
+        fireEvent.change(screen.getByPlaceholderText("write a name"), {
+            target: { value: "Product Name" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a description"), {
+            target: { value: "Product Description" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a Price"), {
+            target: { value: -5 },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a quantity"), {
+            target: { value: 10 },
+        });
+
+        const categoryDropdown = screen.getAllByRole("combobox")[0];
+        fireEvent.mouseDown(categoryDropdown);
+        await waitFor(() => expect(screen.getByText('category1')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('category1'));
+
+        const shippingDropdown = screen.getAllByRole("combobox")[1];
+        fireEvent.mouseDown(shippingDropdown);
+        await waitFor(() => expect(screen.getByText('Yes')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('Yes'));
+        
+        const file = new File(["photo"], "photo.jpg", { type: "image/jpeg" });
+        fireEvent.change(screen.getByLabelText("Upload Photo"), { 
+            target: { files: [file] },
+        });
+
+        fireEvent.click(screen.getByText("CREATE PRODUCT"));
+
+        expect(axios.post).not.toHaveBeenCalled();
+        expect(toast.error).toHaveBeenCalledWith("Price must be greater than 0");
+    });
+
+    test("fails to create product when quantity is less than or equal to 0", async () => {
+        await act(async () => {
+            render(
+                <MemoryRouter initialEntries={["/admin/create-product"]}>
+                    <Routes>
+                        <Route path="/admin/create-product" element={<CreateProduct />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        });
+
+        fireEvent.change(screen.getByPlaceholderText("write a name"), {
+            target: { value: "Product Name" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a description"), {
+            target: { value: "Product Description" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a Price"), {
+            target: { value: 100 },
+        });
+        fireEvent.change(screen.getByPlaceholderText("write a quantity"), {
+            target: { value: -5 },
+        });
+
+        const categoryDropdown = screen.getAllByRole("combobox")[0];
+        fireEvent.mouseDown(categoryDropdown);
+        await waitFor(() => expect(screen.getByText('category1')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('category1'));
+
+        const shippingDropdown = screen.getAllByRole("combobox")[1];
+        fireEvent.mouseDown(shippingDropdown);
+        await waitFor(() => expect(screen.getByText('Yes')).toBeInTheDocument());
+        fireEvent.click(screen.getByText('Yes'));
+        
+        const file = new File(["photo"], "photo.jpg", { type: "image/jpeg" });
+        fireEvent.change(screen.getByLabelText("Upload Photo"), { 
+            target: { files: [file] },
+        });
+
+        fireEvent.click(screen.getByText("CREATE PRODUCT"));
+
+        expect(axios.post).not.toHaveBeenCalled();
+        expect(toast.error).toHaveBeenCalledWith("Quantity must be greater than 0");
+    });
 
     test("error when getting categories", async () => {
         axios.get.mockReset();
@@ -351,7 +709,7 @@ describe("CreateProduct Component", () => {
         fireEvent.click(screen.getByText('Yes'));
         
         const file = new File(["photo"], "photo.jpg", { type: "image/jpeg" });
-        fireEvent.change(screen.getByText("Upload Photo"), { 
+        fireEvent.change(screen.getByLabelText("Upload Photo"), { 
             target: { files: [file] },
         });
 

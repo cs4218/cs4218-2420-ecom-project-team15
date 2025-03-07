@@ -31,7 +31,6 @@ describe("CategoryForm Component", () => {
 
     test("calls setValue when user types in input", () => {
         const inputField = screen.getByPlaceholderText("Enter new category");
-    
         fireEvent.change(inputField, { target: { value: "New Category" } });
         expect(mockSetValue).toHaveBeenCalledWith("New Category");
     });

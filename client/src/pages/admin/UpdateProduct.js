@@ -16,7 +16,7 @@ const UpdateProduct = () => {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [shipping, setShipping] = useState("");
+  const [shipping, setShipping] = useState(false);
   const [photo, setPhoto] = useState("");
   const [id, setId] = useState("");
 
@@ -74,6 +74,20 @@ const UpdateProduct = () => {
       photo && productData.append("photo", photo);
       productData.append("category", category);
       productData.append("shipping", shipping);
+      if (price <= 0) {
+        toast.error("Price must be greater than 0");
+        return;
+      } 
+      if (quantity <= 0) {
+        toast.error("Quantity must be greater than 0");
+        return;
+      }
+      // photo cannot be removed so it does not need to be checked here
+      if (!name || !description || !price || !quantity || !category || shipping === "") {
+        toast.error("All fields are required");
+        return;
+      }
+      
       const { data } = await axios.put(
         `/api/v1/product/update-product/${id}`,
         productData
