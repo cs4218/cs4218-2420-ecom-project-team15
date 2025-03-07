@@ -6,7 +6,7 @@ export const createCategoryController = async (req, res) => {
     if (!name) {
       return res.status(401).send({ message: "Name is required" });
     }
-    const existingCategory = await categoryModel.findOne({ name });
+    const existingCategory = await categoryModel.findOne({ name: { $regex: new RegExp(`^${name.trim()}$`, 'i') } });
     if (existingCategory) {
       return res.status(200).send({
         success: true,
@@ -37,6 +37,22 @@ export const updateCategoryController = async (req, res) => {
   try {
     const { name } = req.body;
     const { id } = req.params;
+    if (!name) {
+      return res.status(401).send({ message: "Name is required" });
+    }
+
+    const existingCategory = await categoryModel.findOne({
+      name: { $regex: new RegExp(`^${name.trim()}$`, 'i') },
+      _id: { $ne: id }
+    });
+
+    if (existingCategory) {
+      return res.status(400).send({
+        success: false,
+        message: "Category with this name already exists",
+      });
+    }
+
     const category = await categoryModel.findByIdAndUpdate(
       id,
       { name, slug: slugify(name) },

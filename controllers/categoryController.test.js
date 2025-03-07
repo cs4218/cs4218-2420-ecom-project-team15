@@ -86,10 +86,19 @@ describe("Update Category Controller Tests", () => {
         }
     }
 
+    const emptyReq = { body: {} };
+
     const res = {
         status: jest.fn().mockReturnThis(),
         send: jest.fn()
     }
+
+    test("Name is not provided", async () => {
+        await updateCategoryController(emptyReq, res);
+
+        expect(res.status).toBeCalledWith(401);
+        expect(res.send).toBeCalledWith({ message: "Name is required" });
+    })
 
     test("Successfully updates a category", async () => {
         categoryModel.findByIdAndUpdate.mockResolvedValue({ name: "Test Category", slug: "Test Category" });
