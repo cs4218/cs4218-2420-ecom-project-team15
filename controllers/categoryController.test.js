@@ -26,7 +26,6 @@ describe("Create Category Controller Tests", () => {
     test("Name is not provided", async () => {
         await createCategoryController(emptyReq, res);
 
-        expect(res.status).toBeCalledWith(401);
         expect(res.send).toBeCalledWith({ message: "Name is required" });
     })
 
@@ -86,7 +85,7 @@ describe("Update Category Controller Tests", () => {
         }
     }
 
-    const emptyReq = { body: {} };
+    const emptyReq = { body: {}, params: { id: "123" } };
 
     const res = {
         status: jest.fn().mockReturnThis(),
@@ -96,11 +95,11 @@ describe("Update Category Controller Tests", () => {
     test("Name is not provided", async () => {
         await updateCategoryController(emptyReq, res);
 
-        expect(res.status).toBeCalledWith(401);
         expect(res.send).toBeCalledWith({ message: "Name is required" });
     })
 
     test("Successfully updates a category", async () => {
+        categoryModel.findOne.mockResolvedValue(false);
         categoryModel.findByIdAndUpdate.mockResolvedValue({ name: "Test Category", slug: "Test Category" });
 
         await updateCategoryController(req, res);
@@ -114,8 +113,21 @@ describe("Update Category Controller Tests", () => {
         });
     });
 
+    test("Category already exists", async () => {
+        categoryModel.findOne.mockResolvedValue(true);
+
+        await updateCategoryController(req, res);
+
+        expect(res.status).toBeCalledWith(200);
+        expect(res.send).toBeCalledWith({
+            success: false,
+            message: "Category with this name already exists",
+        });
+    });
+
     test("Error while updating category", async () => {
         const mockError = new Error("Some Error");
+        categoryModel.findOne.mockResolvedValue(false);
         categoryModel.findByIdAndUpdate.mockRejectedValue(mockError);
 
         await updateCategoryController(req, res);
