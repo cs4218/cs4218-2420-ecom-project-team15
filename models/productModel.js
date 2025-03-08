@@ -20,8 +20,10 @@ const productSchema = new mongoose.Schema(
       min: [0, "Price cannot be negative"],
       validate: {
         validator: function(value) {
-          //price can have no decimal places or up to 2 decimal places
-          return value === Math.trunc(value) || value.toFixed(1) || value.toFixed(2) === value.toString();
+          if (value === Math.trunc(value)) {
+            return true;
+          }
+          return value.toString().split(".")[1].length <= 2
         },
         message: "Price can only have up to 2 decimal places",
       }
