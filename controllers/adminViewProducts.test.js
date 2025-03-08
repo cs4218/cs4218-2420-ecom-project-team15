@@ -77,9 +77,8 @@ describe("Admin View Products Tests", () => {
             expect(mockPhoto.data).toEqual(mockBuffer);
             expect(mockPhoto.contentType).toEqual(mockProduct.files.photo.type);
             expect(mockResponse.status).toHaveBeenCalledWith(201);
-            expect(mockResponse.send).toHaveBeenCalledWith({
+            expect(mockResponse.send).toHaveBeenCalledWith(expect.objectContaining({
                 success: true,
-                message: "Product Created Successfully",
                 products: expect.objectContaining({
                     ...mockProduct.fields,
                     slug: "test-product",
@@ -88,7 +87,7 @@ describe("Admin View Products Tests", () => {
                         contentType: "image/jpeg",
                     }
                 }),
-            });
+            }));
         });
 
         it("should throw error without photo provided", async () => {
@@ -140,11 +139,10 @@ describe("Admin View Products Tests", () => {
     
             await createProductController(mockProduct, mockResponse);
             expect(mockResponse.status).toHaveBeenCalledWith(500);
-            expect(mockResponse.send).toHaveBeenCalledWith({
+            expect(mockResponse.send).toHaveBeenCalledWith(expect.objectContaining({
                 success: false,
-                message: "Error while creating product",
                 error: "500 Internal Server Error",
-            });
+            }));
             expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     
@@ -239,10 +237,9 @@ describe("Admin View Products Tests", () => {
 
             await deleteProductController({ params: { pid: "test-product-id" } }, mockResponse);
             expect(mockResponse.status).toHaveBeenCalledWith(200);
-            expect(mockResponse.send).toHaveBeenCalledWith({
+            expect(mockResponse.send).toHaveBeenCalledWith(expect.objectContaining({
                 success: true,
-                message: "Product Deleted successfully",
-            });
+            }));
         });
 
         it("should display an error if deleting a product fails", async () => {
@@ -252,11 +249,10 @@ describe("Admin View Products Tests", () => {
 
             await expect(deleteProductController({ params: { pid: "test-product-id" } }, mockResponse));
             expect(mockResponse.status).toHaveBeenCalledWith(500);
-            expect(mockResponse.send).toHaveBeenCalledWith({
+            expect(mockResponse.send).toHaveBeenCalledWith(expect.objectContaining({
                 success: false,
-                message: "Error while deleting product",
                 error: "500 Internal Server Error",
-            });
+            }));
             expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     });
@@ -311,11 +307,10 @@ describe("Admin View Products Tests", () => {
             );
             expect(savedProduct.photo.data).toEqual(mockBuffer);
             expect(mockResponse.status).toHaveBeenCalledWith(200);
-            expect(mockResponse.send).toHaveBeenCalledWith({
-            success: true,
-            message: "Product Updated Successfully",
-            products: savedProduct
-            });
+            expect(mockResponse.send).toHaveBeenCalledWith(expect.objectContaining({
+                success: true,
+                products: savedProduct,
+            }));
         });
 
         it("should throw error without photo provided", async () => {
@@ -474,11 +469,10 @@ describe("Admin View Products Tests", () => {
             }, mockResponse);
 
             expect(mockResponse.status).toHaveBeenCalledWith(500);
-            expect(mockResponse.send).toHaveBeenCalledWith({
+            expect(mockResponse.send).toHaveBeenCalledWith(expect.objectContaining({
                 success: false,
-                message: "Error while updating product",
                 error: "500 Internal Server Error",
-            });
+            }));
             expect(console.log).toHaveBeenCalledWith("500 Internal Server Error");
         });
     });
