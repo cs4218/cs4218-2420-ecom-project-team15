@@ -10,7 +10,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 //payment gateway
-var gateway = new braintree.BraintreeGateway({
+// changed due to SonarQube suggestion: Unexpected var, use let or const instead.
+const gateway = new braintree.BraintreeGateway({
   environment: braintree.Environment.Sandbox,
   merchantId: process.env.BRAINTREE_MERCHANT_ID,
   publicKey: process.env.BRAINTREE_PUBLIC_KEY,
@@ -19,31 +20,38 @@ var gateway = new braintree.BraintreeGateway({
 
 export const createProductController = async (req, res) => {
   try {
-    const { name, description, price, category, quantity, shipping } =
+    // changed due to SonarQube suggestion: Remove this useless assignment to variable "shipping".
+    const { name, description, price, category, quantity } =
       req.fields;
     const { photo } = req.files;
     //alidation
     switch (true) {
       case !name:
-        return res.status(500).send({ error: "Name is Required" });
+        return res.status(400).send({ error: "Name is Required" });
       case !description:
-        return res.status(500).send({ error: "Description is Required" });
+        return res.status(400).send({ error: "Description is Required" });
       case !price:
-        return res.status(500).send({ error: "Price is Required" });
+        return res.status(400).send({ error: "Price is Required" });
       case !category:
-        return res.status(500).send({ error: "Category is Required" });
+        return res.status(400).send({ error: "Category is Required" });
       case !quantity:
-        return res.status(500).send({ error: "Quantity is Required" });
+        return res.status(400).send({ error: "Quantity is Required" });
       case photo && photo.size > 1000000:
         return res
-          .status(500)
-          .send({ error: "photo is Required and should be less then 1mb" });
+          .status(400)
+          .send({ error: "Photo should be less then 1mb" });
+      case !photo:
+        return res.status(400).send({ error: "Photo is Required" });
     }
 
     const products = new productModel({ ...req.fields, slug: slugify(name) });
-    if (photo) {
+    try {
       products.photo.data = fs.readFileSync(photo.path);
       products.photo.contentType = photo.type;
+    } catch (error) {
+      return res.status(500).send({
+        error: "Error while saving product photo",
+      });
     }
     await products.save();
     res.status(201).send({
@@ -56,7 +64,7 @@ export const createProductController = async (req, res) => {
     res.status(500).send({
       success: false,
       error,
-      message: "Error in crearing product",
+      message: "Error while creating product",
     });
   }
 };
@@ -72,16 +80,16 @@ export const getProductController = async (req, res) => {
       .sort({ createdAt: -1 });
     res.status(200).send({
       success: true,
-      counTotal: products.length,
-      message: "ALlProducts ",
+      countTotal: products.length,
+      message: "All Products",
       products,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Erorr in getting products",
-      error: error.message,
+      message: "Error in getting products",
+      error,
     });
   }
 };
@@ -101,7 +109,7 @@ export const getSingleProductController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Eror while getitng single product",
+      message: "Error while getting single product",
       error,
     });
   }
@@ -111,15 +119,21 @@ export const getSingleProductController = async (req, res) => {
 export const productPhotoController = async (req, res) => {
   try {
     const product = await productModel.findById(req.params.pid).select("photo");
-    if (product.photo.data) {
+    // changed due to SonarQube suggestion: Prefer using an optional chain expression instead, as it's more concise and easier to read.
+    if (product?.photo?.data) {
       res.set("Content-type", product.photo.contentType);
       return res.status(200).send(product.photo.data);
+    } else {
+      // throw error if photo is not found
+      return res.status(404).send({
+        error: "No photo found",
+      });
     }
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Erorr while getting photo",
+      message: "Error while getting photo",
       error,
     });
   }
@@ -146,25 +160,28 @@ export const deleteProductController = async (req, res) => {
 //upate producta
 export const updateProductController = async (req, res) => {
   try {
-    const { name, description, price, category, quantity, shipping } =
+    // changed due to SonarQube suggestion: Remove this useless assignment to variable "shipping".
+    const { name, description, price, category, quantity } =
       req.fields;
     const { photo } = req.files;
-    //alidation
+    //validation
     switch (true) {
       case !name:
-        return res.status(500).send({ error: "Name is Required" });
+        return res.status(400).send({ error: "Name is Required" });
       case !description:
-        return res.status(500).send({ error: "Description is Required" });
+        return res.status(400).send({ error: "Description is Required" });
       case !price:
-        return res.status(500).send({ error: "Price is Required" });
+        return res.status(400).send({ error: "Price is Required" });
       case !category:
-        return res.status(500).send({ error: "Category is Required" });
+        return res.status(400).send({ error: "Category is Required" });
       case !quantity:
-        return res.status(500).send({ error: "Quantity is Required" });
+        return res.status(400).send({ error: "Quantity is Required" });
       case photo && photo.size > 1000000:
         return res
-          .status(500)
-          .send({ error: "photo is Required and should be less then 1mb" });
+          .status(400)
+          .send({ error: "Photo should be less than 1mb" });
+      case !photo:
+        return res.status(400).send({ error: "Photo is Required" });
     }
 
     const products = await productModel.findByIdAndUpdate(
@@ -172,22 +189,26 @@ export const updateProductController = async (req, res) => {
       { ...req.fields, slug: slugify(name) },
       { new: true }
     );
-    if (photo) {
+    try {
       products.photo.data = fs.readFileSync(photo.path);
       products.photo.contentType = photo.type;
+    } catch (error) {
+      return res.status(500).send({
+        error: "Error while updating product photo",
+      });
     }
     await products.save();
-    res.status(201).send({
-      success: true,
-      message: "Product Updated Successfully",
-      products,
+    res.status(200).send({
+    success: true,
+    message: "Product Updated Successfully",
+    products,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
       error,
-      message: "Error in Updte product",
+      message: "Error while updating product",
     });
   }
 };
@@ -208,7 +229,7 @@ export const productFiltersController = async (req, res) => {
     console.log(error);
     res.status(400).send({
       success: false,
-      message: "Error WHile Filtering Products",
+      message: "Error while filtering products",
       error,
     });
   }
@@ -224,7 +245,7 @@ export const productCountController = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(400).send({
+    res.status(500).send({
       message: "Error in product count",
       error,
       success: false,
@@ -236,7 +257,7 @@ export const productCountController = async (req, res) => {
 export const productListController = async (req, res) => {
   try {
     const perPage = 6;
-    const page = req.params.page ? req.params.page : 1;
+    const page = req.params.page ?? 1;
     const products = await productModel
       .find({})
       .select("-photo")
@@ -249,7 +270,7 @@ export const productListController = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(400).send({
+    res.status(500).send({
       success: false,
       message: "error in per page ctrl",
       error,
