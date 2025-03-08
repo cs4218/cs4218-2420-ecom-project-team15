@@ -44,14 +44,16 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "sonarqube-scanner": "^3.5.0",
-    "nwsapi": "2.2.13"
+    "mongodb-memory-server": "^10.1.4",
+    "sonarqube-scanner": "^3.5.0"
   },
   "overrides": {
     "nwsapi": "2.2.13"
   },
   "jest": {
-    "setupFiles": ["<rootDir>/jest.setup.js"],
+    "setupFiles": [
+      "<rootDir>/jest.setup.js"
+    ],
     "testEnvironment": "jest-environment-jsdom",
     "moduleNameMapper": {
       "\\.(css|scss)$": "identity-obj-proxy"
