@@ -33,6 +33,7 @@ describe("test registerController", () => {
   it("should return error if name is missing", async () => {
     delete req.body.name;
     await registerController(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
       error: expect.stringMatching(/name/i),
     }));
@@ -41,6 +42,7 @@ describe("test registerController", () => {
   it("should return error if email is missing", async () => {
     delete req.body.email;
     await registerController(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
       message: expect.stringMatching(/email/i),
     }));
@@ -49,6 +51,7 @@ describe("test registerController", () => {
   it("should return error if password is missing", async () => {
     delete req.body.password;
     await registerController(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
       message: expect.stringMatching(/password/i),
     }));
@@ -57,6 +60,7 @@ describe("test registerController", () => {
   it("should return error if phone is missing", async () => {
     delete req.body.phone;
     await registerController(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
       message: expect.stringMatching(/phone/i),
     }));
@@ -65,6 +69,7 @@ describe("test registerController", () => {
   it("should return error if address is missing", async () => {
     delete req.body.address;
     await registerController(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
       message: expect.stringMatching(/address/i),
     }));
@@ -73,6 +78,7 @@ describe("test registerController", () => {
   it("should return error if answer is missing", async () => {
     delete req.body.answer;
     await registerController(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
       message: expect.stringMatching(/answer/i),
     }));
@@ -81,7 +87,7 @@ describe("test registerController", () => {
   it("should return error if user already exists", async () => {
     userModel.findOne.mockResolvedValueOnce({ email: "test@example.com"});
     await registerController(req, res);
-    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.status).toHaveBeenCalledWith(409);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
       success: false,
     }));
@@ -125,19 +131,19 @@ describe("test loginController", () => {
     };
   });
 
-  it("should return 404 with message that either email or password is invalid if email is missing", async () => {
+  it("should return 400 with message that either email or password is invalid if email is missing", async () => {
     delete req.body.email;
     await loginController(req, res);
-    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
       success: false,
     }));
   });
 
-  it("should return 404 with message that either email or password is invalid if password is missing", async () => {
+  it("should return 400 with message that either email or password is invalid if password is missing", async () => {
     delete req.body.password;
     await loginController(req, res);
-    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
       success: false,
     }));
@@ -153,11 +159,11 @@ describe("test loginController", () => {
     }));
   });
 
-  it("should return 200 with message that password is incorrect if password does not match", async () => {
+  it("should return 401 with message that password is incorrect if password does not match", async () => {
     userModel.findOne.mockResolvedValueOnce({ email: "test@example.com", password: "incorrectHashedPassword" });
     comparePassword.mockResolvedValueOnce(false);
     await loginController(req, res);
-    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.status).toHaveBeenCalledWith(401);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
       success: false,
       message: expect.stringMatching(/password/i),
@@ -331,6 +337,7 @@ describe("test updateProfileController", () => {
   it("should return error new password is less than 6 characters", async () => {
     req.body.password = "123";
     await updateProfileController(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
       error: expect.stringMatching(/6 characters long/i),
     }));
@@ -429,7 +436,7 @@ describe("test updateProfileController", () => {
     }));
   });
 
-  it("should return 400 if error occurs while updating profile", async () => {
+  it("should return 500 if server error occurs while updating profile", async () => {
     userModel.findById.mockResolvedValue({
       _id: "1",
       name: "John Doe",
@@ -445,7 +452,7 @@ describe("test updateProfileController", () => {
 
     await updateProfileController(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
       success: false,
     }));

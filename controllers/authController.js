@@ -9,28 +9,28 @@ export const registerController = async (req, res) => {
     const { name, email, password, phone, address, answer } = req.body;
     //validations
     if (!name) {
-      return res.send({ error: "Name is Required" });
+      return res.status(400).send({ error: "Name is Required" });
     }
     if (!email) {
-      return res.send({ message: "Email is Required" });
+      return res.status(400).send({ message: "Email is Required" });
     }
     if (!password) {
-      return res.send({ message: "Password is Required" });
+      return res.status(400).send({ message: "Password is Required" });
     }
     if (!phone) {
-      return res.send({ message: "Phone no is Required" });
+      return res.status(400).send({ message: "Phone no is Required" });
     }
     if (!address) {
-      return res.send({ message: "Address is Required" });
+      return res.status(400).send({ message: "Address is Required" });
     }
     if (!answer) {
-      return res.send({ message: "Answer is Required" });
+      return res.status(400).send({ message: "Answer is Required" });
     }
     //check user
     const exisitingUser = await userModel.findOne({ email });
     //exisiting user
     if (exisitingUser) {
-      return res.status(200).send({
+      return res.status(409).send({
         success: false,
         message: "Already Registered please login",
       });
@@ -68,7 +68,7 @@ export const loginController = async (req, res) => {
     const { email, password } = req.body;
     //validation
     if (!email || !password) {
-      return res.status(404).send({
+      return res.status(400).send({
         success: false,
         message: "Invalid email or password",
       });
@@ -83,7 +83,7 @@ export const loginController = async (req, res) => {
     }
     const match = await comparePassword(password, user.password);
     if (!match) {
-      return res.status(200).send({
+      return res.status(401).send({
         success: false,
         message: "Invalid Password",
       });
@@ -121,13 +121,13 @@ export const forgotPasswordController = async (req, res) => {
   try {
     const { email, answer, newPassword } = req.body;
     if (!email) {
-      res.status(400).send({ message: "Email is required" });
+      return res.status(400).send({ message: "Email is required" });
     }
     if (!answer) {
-      res.status(400).send({ message: "Answer is required" });
+      return res.status(400).send({ message: "Answer is required" });
     }
     if (!newPassword) {
-      res.status(400).send({ message: "New Password is required" });
+      return res.status(400).send({ message: "New Password is required" });
     }
     //check
     const user = await userModel.findOne({ email, answer });
@@ -171,7 +171,7 @@ export const updateProfileController = async (req, res) => {
     const user = await userModel.findById(req.user._id);
     //password
     if (password && password.length < 6) {
-      return res.json({ error: "Passsword is required to be at least 6 characters long" });
+      return res.status(400).json({ error: "Passsword is required to be at least 6 characters long" });
     }
     const hashedPassword = password ? await hashPassword(password) : undefined;
     const updatedUser = await userModel.findByIdAndUpdate(
@@ -191,7 +191,7 @@ export const updateProfileController = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(400).send({
+    res.status(500).send({
       success: false,
       message: "Error While Updating profile",
       error,
@@ -250,7 +250,7 @@ export const orderStatusController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error While Updateing Order",
+      message: "Error While Updating Order",
       error,
     });
   }
