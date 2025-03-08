@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Layout from "./../components/Layout";
+import Layout from "../components/Layout";
 import { useCart } from "../context/cart";
 import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
@@ -83,14 +83,10 @@ const CartPage = () => {
         <div className="row">
           <div className="col-md-12">
             <h1 className="text-center bg-light p-2 mb-1">
-              {!auth?.user
-                ? "Hello Guest"
-                : `Hello  ${auth?.token && auth?.user?.name}`}
+              {!auth?.user ? "Hello Guest" : `Hello  ${auth?.token && auth?.user?.name}`}
               <p className="text-center">
                 {cart?.length
-                  ? `You Have ${cart.length} items in your cart ${
-                      auth?.token ? "" : "please login to checkout !"
-                    }`
+                  ? `You have ${cart.length} ${cart.length == 1 ? "item" : "items"} in your cart ${auth?.token ? "" : "Please login to checkout!"}`
                   : " Your Cart Is Empty"}
               </p>
             </h1>
@@ -116,10 +112,7 @@ const CartPage = () => {
                     <p>Price : {p.price}</p>
                   </div>
                   <div className="col-md-4 cart-remove-btn">
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => removeCartItem(p._id)}
-                    >
+                    <button className="btn btn-danger" onClick={() => removeCartItem(p._id)}>
                       Remove
                     </button>
                   </div>
@@ -134,12 +127,9 @@ const CartPage = () => {
               {auth?.user?.address ? (
                 <>
                   <div className="mb-3">
-                    <h4>Current Address</h4>
+                    <h4>Current Address:</h4>
                     <h5>{auth?.user?.address}</h5>
-                    <button
-                      className="btn btn-outline-warning"
-                      onClick={() => navigate("/dashboard/user/profile")}
-                    >
+                    <button className="btn btn-outline-warning" onClick={() => navigate("/dashboard/user/profile")}>
                       Update Address
                     </button>
                   </div>
@@ -147,10 +137,7 @@ const CartPage = () => {
               ) : (
                 <div className="mb-3">
                   {auth?.token ? (
-                    <button
-                      className="btn btn-outline-warning"
-                      onClick={() => navigate("/dashboard/user/profile")}
-                    >
+                    <button className="btn btn-outline-warning" onClick={() => navigate("/dashboard/user/profile")}>
                       Update Address
                     </button>
                   ) : (
