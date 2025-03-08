@@ -24,10 +24,12 @@ const CreateProduct = () => {
       const { data } = await axios.get("/api/v1/category/get-category");
       if (data?.success) {
         setCategories(data?.category);
+      } else {
+        toast.error("Failed to get categories");
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      toast.error("Something went wrong in getting category");
     }
   };
 
@@ -46,15 +48,28 @@ const CreateProduct = () => {
       productData.append("quantity", quantity);
       productData.append("photo", photo);
       productData.append("category", category);
-      const { data } = axios.post(
+      productData.append("shipping", shipping);
+      if (price <= 0) {
+        toast.error("Price must be greater than 0");
+        return;
+      } 
+      if (quantity <= 0) {
+        toast.error("Quantity must be greater than 0");
+        return;
+      }
+      if (!name || !description || !price || !quantity || !category || !photo || shipping === "") {
+        toast.error("All fields are required");
+        return;
+      }
+      const { data } = await axios.post(
         "/api/v1/product/create-product",
         productData
       );
       if (data?.success) {
-        toast.error(data?.message);
-      } else {
         toast.success("Product Created Successfully");
         navigate("/dashboard/admin/products");
+      } else {
+        toast.error(data?.message);
       }
     } catch (error) {
       console.log(error);
@@ -73,7 +88,7 @@ const CreateProduct = () => {
             <h1>Create Product</h1>
             <div className="m-1 w-75">
               <Select
-                bordered={false}
+                variant={"borderless"}
                 placeholder="Select a category"
                 size="large"
                 showSearch
@@ -151,7 +166,7 @@ const CreateProduct = () => {
               </div>
               <div className="mb-3">
                 <Select
-                  bordered={false}
+                  variant={"borderless"}
                   placeholder="Select Shipping "
                   size="large"
                   showSearch
@@ -160,8 +175,8 @@ const CreateProduct = () => {
                     setShipping(value);
                   }}
                 >
-                  <Option value="0">No</Option>
-                  <Option value="1">Yes</Option>
+                  <Option value={false}>No</Option>
+                  <Option value={true}>Yes</Option>
                 </Select>
               </div>
               <div className="mb-3">

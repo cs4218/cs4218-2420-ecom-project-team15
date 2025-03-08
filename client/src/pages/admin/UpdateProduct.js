@@ -16,7 +16,7 @@ const UpdateProduct = () => {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [shipping, setShipping] = useState("");
+  const [shipping, setShipping] = useState(false);
   const [photo, setPhoto] = useState("");
   const [id, setId] = useState("");
 
@@ -30,7 +30,6 @@ const UpdateProduct = () => {
       setId(data.product._id);
       setDescription(data.product.description);
       setPrice(data.product.price);
-      setPrice(data.product.price);
       setQuantity(data.product.quantity);
       setShipping(data.product.shipping);
       setCategory(data.product.category._id);
@@ -38,20 +37,24 @@ const UpdateProduct = () => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     getSingleProduct();
     //eslint-disable-next-line
   }, []);
+
   //get all category
   const getAllCategory = async () => {
     try {
       const { data } = await axios.get("/api/v1/category/get-category");
       if (data?.success) {
         setCategories(data?.category);
+      } else {
+        toast.error("Failed to get categories");
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      toast.error("Something went wrong in getting category");
     }
   };
 
@@ -70,15 +73,30 @@ const UpdateProduct = () => {
       productData.append("quantity", quantity);
       photo && productData.append("photo", photo);
       productData.append("category", category);
-      const { data } = axios.put(
+      productData.append("shipping", shipping);
+      if (price <= 0) {
+        toast.error("Price must be greater than 0");
+        return;
+      } 
+      if (quantity <= 0) {
+        toast.error("Quantity must be greater than 0");
+        return;
+      }
+      // photo cannot be removed so it does not need to be checked here
+      if (!name || !description || !price || !quantity || !category || shipping === "") {
+        toast.error("All fields are required");
+        return;
+      }
+      
+      const { data } = await axios.put(
         `/api/v1/product/update-product/${id}`,
         productData
       );
       if (data?.success) {
-        toast.error(data?.message);
-      } else {
         toast.success("Product Updated Successfully");
         navigate("/dashboard/admin/products");
+      } else {
+        toast.error(data?.message);
       }
     } catch (error) {
       console.log(error);
@@ -94,8 +112,12 @@ const UpdateProduct = () => {
       const { data } = await axios.delete(
         `/api/v1/product/delete-product/${id}`
       );
-      toast.success("Product DEleted Succfully");
-      navigate("/dashboard/admin/products");
+      if (data?.success) {
+        toast.success("Product deleted successfully");
+        navigate("/dashboard/admin/products");
+      } else {
+        toast.error(data?.message);
+      }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
@@ -112,7 +134,7 @@ const UpdateProduct = () => {
             <h1>Update Product</h1>
             <div className="m-1 w-75">
               <Select
-                bordered={false}
+                variant={"borderless"}
                 placeholder="Select a category"
                 size="large"
                 showSearch
@@ -200,7 +222,7 @@ const UpdateProduct = () => {
               </div>
               <div className="mb-3">
                 <Select
-                  bordered={false}
+                  variant={"borderless"}
                   placeholder="Select Shipping "
                   size="large"
                   showSearch
@@ -208,10 +230,10 @@ const UpdateProduct = () => {
                   onChange={(value) => {
                     setShipping(value);
                   }}
-                  value={shipping ? "yes" : "No"}
-                >
-                  <Option value="0">No</Option>
-                  <Option value="1">Yes</Option>
+                  value={shipping}
+                > 
+                  <Option value={false}>No</Option>
+                  <Option value={true}>Yes</Option>
                 </Select>
               </div>
               <div className="mb-3">
