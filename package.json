@@ -8,10 +8,10 @@
     "server": "nodemon server.js",
     "client": "npm start --prefix ./client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "sonarqube": "sonar-scanner",
+    "sonarqube": "sonarqube-scanner",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "test:frontend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.cjs",
-    "test:backend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.backend.config.cjs"
+    "test:frontend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.js",
+    "test:backend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.backend.config.js"
   },
   "keywords": [],
   "author": "RP",
