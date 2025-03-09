@@ -1,5 +1,8 @@
 import braintree from "braintree";
-import { brainTreePaymentController, braintreeTokenController } from "./productController.js";
+import {
+  brainTreePaymentController,
+  braintreeTokenController,
+} from "./productController.js";
 import orderModel from "../models/orderModel.js";
 
 jest.mock("braintree", () => {
@@ -12,8 +15,8 @@ jest.mock("braintree", () => {
         sale: mockSaleSingleton,
       },
       clientToken: {
-        generate: mockGenerateSingleton
-      }
+        generate: mockGenerateSingleton,
+      },
     })),
     Environment: {
       Sandbox: "sandbox",
@@ -28,7 +31,6 @@ jest.mock("../models/orderModel", () => {
     save: jest.fn().mockResolvedValue({ _id: "order123" }), // Mock .save() method
   }));
 });
-
 
 // This is to ensure that the jest function returned for the transaction.sale method
 // is the same for ALL braintree singletons.
@@ -53,20 +55,20 @@ describe("brainTreePaymentController", () => {
       send: jest.fn(),
     };
 
-
-
-    process.env.BRAINTREE_MERCHANT_ID = "merchantId"
-    process.env.BRAINTREE_PUBLIC_KEY = "publicKey"
-    process.env.BRAINTREE_PRIVATE_KEY = "privateKey"
+    process.env.BRAINTREE_MERCHANT_ID = "merchantId";
+    process.env.BRAINTREE_PUBLIC_KEY = "publicKey";
+    process.env.BRAINTREE_PRIVATE_KEY = "privateKey";
   });
 
   it("should successfully process the transaction", async () => {
     req.body.cart = [{ price: 10 }, { price: 15 }];
     req.body.nonce = "fake-nonce";
     req.user._id = 123;
-    const totalAmount = req.body.cart.reduce((acc, item) => acc + item.price, 0);
+    const totalAmount = req.body.cart.reduce(
+      (acc, item) => acc + item.price,
+      0
+    );
     const mockResult = { success: true, transaction: { id: "txn123" } };
-
 
     mockSaleSingleton.mockImplementation((data, callback) => {
       callback(null, mockResult); // Simulate success
@@ -85,8 +87,8 @@ describe("brainTreePaymentController", () => {
     expect(orderModel).toHaveBeenCalledWith({
       products: req.body.cart,
       payment: mockResult,
-      buyer: req.user._id
-    })
+      buyer: req.user._id,
+    });
     expect(res.json).toHaveBeenCalledWith({ ok: true });
   });
 
@@ -109,7 +111,7 @@ describe("brainTreePaymentController", () => {
     const mockError = new Error("Random error");
 
     mockSaleSingleton.mockImplementation((data, callback) => {
-      throw mockError
+      throw mockError;
     });
 
     await brainTreePaymentController(req, res);
@@ -118,7 +120,6 @@ describe("brainTreePaymentController", () => {
     expect(res.send).toHaveBeenCalledWith(mockError);
   });
 });
-
 
 describe("brainTreeTokenController", () => {
   let req, res;
@@ -132,14 +133,13 @@ describe("brainTreeTokenController", () => {
       send: jest.fn(),
     };
 
-    process.env.BRAINTREE_MERCHANT_ID = "merchantId"
-    process.env.BRAINTREE_PUBLIC_KEY = "publicKey"
-    process.env.BRAINTREE_PRIVATE_KEY = "privateKey"
+    process.env.BRAINTREE_MERCHANT_ID = "merchantId";
+    process.env.BRAINTREE_PUBLIC_KEY = "publicKey";
+    process.env.BRAINTREE_PRIVATE_KEY = "privateKey";
   });
 
   it("should successfully return the token", async () => {
-    const mockToken = { "token": "This is a braintree token" };
-
+    const mockToken = { token: "This is a braintree token" };
 
     mockGenerateSingleton.mockImplementation((data, callback) => {
       callback(null, mockToken); // Simulate success
@@ -172,8 +172,8 @@ describe("brainTreeTokenController", () => {
     const mockError = new Error("Random error");
 
     mockGenerateSingleton.mockImplementation((data, callback) => {
-      console.log(mockError.message)
-      throw mockError
+      console.log(mockError.message);
+      throw mockError;
     });
 
     await braintreeTokenController(req, res);
