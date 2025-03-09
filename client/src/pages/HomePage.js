@@ -136,8 +136,6 @@ const getAllProducts = async () => {
     setChecked(all);
   };
   useEffect(() => {
-    console.log("HELLLOOO")
-    console.log(!checked.length || !radio.length)
     if (!checked.length || !radio.length) getAllProducts();
   }, [checked.length, radio.length]);
 
