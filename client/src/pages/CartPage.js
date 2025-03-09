@@ -157,7 +157,7 @@ const CartPage = () => {
                         })
                       }
                     >
-                      Plase Login to checkout
+                      Plase login to checkout
                     </button>
                   )}
                 </div>
