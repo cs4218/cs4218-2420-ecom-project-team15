@@ -9,6 +9,7 @@ describe("CategoryModel", () => {
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
     await mongoose.connect(uri);
+    await Category.init();
   });
 
   afterEach(async () => {
@@ -82,6 +83,7 @@ describe("CategoryModel", () => {
       name: "Clothes",
       slug: "clothes",
     });
+
     await firstCategory.save();
 
     const secondCategory = new Category({
