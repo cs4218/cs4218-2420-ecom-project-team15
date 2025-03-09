@@ -185,6 +185,26 @@ describe("CartPage Component", () => {
     expect(screen.getByText(/Total : \$150\.20/i)).toBeInTheDocument();
   });
 
+  it("display $0 when value is negative", async () => {
+    useAuth.mockReturnValue([{ token: "mockToken", user: { name: "Johnny", address: "Tembu Street" } }]);
+    useCart.mockReturnValue([
+      [
+        { _id: "3", name: "Shoes", description: "Marathon shoes", price: -100 },
+      ],
+      jest.fn(),
+    ]);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText(/Total : \$0\.00/i)).toBeInTheDocument();
+  });
+
   it("calculates total price correctly when cart is empty", async () => {
     useAuth.mockReturnValue([{ token: "mockToken", user: { name: "Johnny", address: "Tembu Street" } }]);
     useCart.mockReturnValue([
