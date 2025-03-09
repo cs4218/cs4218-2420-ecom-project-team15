@@ -5,7 +5,7 @@ import axios from "axios";
 import { useCart } from "../context/cart";
 import HomePage from "../pages/HomePage";
 import "@testing-library/jest-dom/extend-expect";
-
+import userEvent from "@testing-library/user-event";
 
 jest.mock("axios");
 
@@ -423,5 +423,272 @@ describe("HomePage Component", () => {
     });
 
     expect(screen.getByText("All Products")).toBeInTheDocument();
+  });
+
+  it("handles category API failure gracefully", async () => {
+    axios.get.mockImplementation((url) => {
+      if (url.includes("/api/v1/category/get-category")) {
+        return Promise.reject(new Error("Failed to fetch categories"));
+      }
+      return Promise.resolve({ data: {} });
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText("All Products")).toBeInTheDocument();
+  });
+
+  it("handles product count API failure gracefully", async () => {
+    axios.get.mockImplementation((url) => {
+      if (url.includes("/api/v1/product/product-count")) {
+        return Promise.reject(new Error("Failed to fetch product count"));
+      }
+      return Promise.resolve({ data: {} });
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText("All Products")).toBeInTheDocument();
+  });
+  it("fetches all products when filters are cleared", async () => {
+    axios.get.mockImplementation((url) => {
+      if (url.includes("/api/v1/product/product-list")) {
+        return Promise.resolve({ data: { products: [] } });
+      }
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
+      );
+    });
+
+    fireEvent.click(screen.getByText(/RESET FILTERS/i));
+
+    await waitFor(() => {
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-list/1");
+    });
+  });
+
+  it("calls filterProduct when category is selected", async () => {
+    axios.post.mockImplementation((url) => {
+      if (url.includes("/api/v1/product/product-filters")) {
+        return Promise.resolve({ data: { products: [] } });
+      }
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
+      );
+    });
+
+    fireEvent.click(screen.getByLabelText(/Electronics/i));
+
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+        checked: ["1"],
+        radio: [],
+      });
+    });
+  });
+
+  it("loads more products when page number is increased", async () => {
+    axios.get.mockImplementation((url) => {
+      if (url.includes("/api/v1/product/product-list/1")) {
+        return Promise.resolve({
+          data: {
+            products: [{ _id: "203", name: "Razer Laptop", description: "Gaming Laptop", price: 2300 }],
+          },
+        });
+      }
+      if (url.includes("/api/v1/product/product-count")) {
+        return Promise.resolve({ data: { total: 3 } });
+      }
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
+      );
+    });
+
+    fireEvent.click(screen.getByText(/Loadmore/i));
+
+    await waitFor(() => {
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-list/2");
+      expect(screen.getByText("Razer Laptop")).toBeInTheDocument();
+    });
+  });
+
+  it("removes category filter when a selected category is deselected", async () => {
+    axios.post.mockResolvedValue({ data: { products: [] } });
+  
+    axios.get.mockImplementation((url) => {
+      if (url.includes("/api/v1/category/get-category")) {
+        return Promise.resolve({
+          data: { success: true, category: [{ _id: "1", name: "Electronics" }] },
+        });
+      }
+    });
+  
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
+      );
+    });
+  
+    const electronicsCheckbox = await screen.findByLabelText("Electronics");
+  
+    await act(async () => {
+      userEvent.click(electronicsCheckbox);
+    });
+  
+    expect(electronicsCheckbox).toBeChecked();
+  
+    await act(async () => {
+      userEvent.click(electronicsCheckbox);
+    });
+  
+    expect(electronicsCheckbox).not.toBeChecked();
+  });
+  
+  it("handles error in filterProduct function gracefully", async () => {
+    const mockError = new Error("Product filter API failed");
+    jest.spyOn(axios, "post").mockRejectedValueOnce(mockError);
+  
+    const consoleLogMock = jest.spyOn(console, "log").mockImplementation(() => {});
+  
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
+      );
+    });
+  
+    const electronicsCheckbox = await screen.findByLabelText("Electronics");
+    await act(async () => {
+      fireEvent.click(electronicsCheckbox);
+    });
+  
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+        checked: ["1"],
+        radio: [],
+      });
+    });
+  
+    await waitFor(() => {
+      expect(consoleLogMock).toHaveBeenCalledWith(mockError);
+    });
+  
+    consoleLogMock.mockRestore();
+  });
+
+  it("handles error in getAllProducts function gracefully", async () => {
+    const mockError = new Error("Product fetch API failed");
+  
+    jest.spyOn(axios, "get").mockImplementation((url) => {
+      if (url.includes("/api/v1/product/product-list/")) {
+        return Promise.reject(mockError); 
+      }
+      if (url.includes("/api/v1/category/get-category")) {
+        return Promise.resolve({ data: { success: true, category: [] } }); 
+      }
+      return Promise.reject(new Error(`Unexpected API call: ${url}`));
+    });
+  
+    const consoleErrorMock = jest.spyOn(console, "error").mockImplementation(() => {});
+  
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
+      );
+    });
+  
+    await waitFor(() => {
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-list/1");
+    });
+  
+    await waitFor(() => {
+      expect(consoleErrorMock).toHaveBeenCalledWith("Error fetching products:", mockError);
+    });
+  
+    consoleErrorMock.mockRestore();
+  });
+  
+  
+  it("does not call getAllProducts when category and price filters are selected", async () => {
+    axios.get.mockImplementation((url) => {
+      if (url.includes("/api/v1/category/get-category")) {
+        return Promise.resolve({
+          data: { success: true, category: [{ _id: "1", name: "Electronics" }] },
+        });
+      }
+      if (url.includes("/api/v1/product/product-list")) {
+        return Promise.resolve({ data: { products: [] } });
+      }
+      return Promise.reject(new Error("Unexpected API call"));
+    });
+  
+    jest.spyOn(axios, "post").mockResolvedValue({ data: { products: [] } });
+  
+    await act(async () => {
+      render(
+        <MemoryRouter> 
+          <HomePage />
+        </MemoryRouter>
+      );
+    });
+  
+    expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-list/1");
+  
+    const electronicsCheckbox = await screen.findByLabelText("Electronics");
+    expect(electronicsCheckbox).not.toBeChecked();
+    await act(async () => {
+      fireEvent.click(electronicsCheckbox);
+    });
+  
+    expect(electronicsCheckbox).toBeChecked();
+  
+    const priceRadio = screen.getByText("$100 or more");
+    jest.clearAllMocks();
+    await act(async () => {
+      fireEvent.click(priceRadio);
+    });
+  
+    await waitFor(() => {
+      expect(axios.get).not.toHaveBeenCalled();
+    });
+  
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+        checked: ["1"], 
+        radio: [100, Infinity], 
+      });
+    });
   });
 });

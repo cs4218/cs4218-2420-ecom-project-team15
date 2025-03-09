@@ -6,8 +6,6 @@ import { useAuth } from "../../context/auth";
 import Orders from "../../pages/user/Orders";
 import "@testing-library/jest-dom/extend-expect";
 
-//***********seems like quantity is not there like same product is alw 1 */
-
 
 // Mock axios.post
 jest.mock("axios");
@@ -247,5 +245,32 @@ describe("Orders Component", () => {
 
     expect(screen.getByText("All Orders")).toBeInTheDocument();
   });
+
+  it("does not call getOrders when user is not authenticated", async () => {
+    useAuth.mockReturnValue([null]);
+  
+    const getOrdersSpy = jest.spyOn(axios, "get").mockImplementation((url) => {
+      if (url.includes("/api/v1/orders")) {
+        return Promise.reject(new Error("Should not be called"));
+      }
+      return Promise.resolve({ data: [] }); 
+    });
+  
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Orders />
+        </MemoryRouter>
+      );
+    });
+  
+    expect(screen.getByText("All Orders")).toBeInTheDocument();
+  
+    expect(getOrdersSpy).not.toHaveBeenCalledWith("/api/v1/orders");
+
+    getOrdersSpy.mockRestore();
+  });
+  
+  
 });
 
