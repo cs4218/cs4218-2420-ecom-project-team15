@@ -5,6 +5,21 @@ import { beforeEach, describe } from "node:test";
 
 jest.mock("../models/productModel");
 jest.mock("../models/categoryModel");
+jest.mock("fs");
+jest.mock("slugify");
+jest.mock("braintree", () => ({
+    BraintreeGateway: jest.fn(() => ({
+      clientToken: {
+        generate: jest.fn(),
+      },
+      transaction: {
+        sale: jest.fn(),
+      },
+    })),
+    Environment: {
+      Sandbox: "sandbox",
+    },
+  }));
 
 describe("Search Product Controller Tests", () => {
     beforeEach(() => {
