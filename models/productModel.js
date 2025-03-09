@@ -17,6 +17,16 @@ const productSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: true,
+      min: [0, "Price cannot be negative"],
+      validate: {
+        validator: function(value) {
+          if (value === Math.trunc(value)) {
+            return true;
+          }
+          return value.toString().split(".")[1].length <= 2
+        },
+        message: "Price can only have up to 2 decimal places",
+      }
     },
     category: {
       type: mongoose.ObjectId,
@@ -26,10 +36,18 @@ const productSchema = new mongoose.Schema(
     quantity: {
       type: Number,
       required: true,
+      min: [0, "Quantity must be a positive number"],
+      validate: {
+        validator: Number.isInteger,
+        message: "Quantity must be an integer value",
+      }
     },
     photo: {
-      data: Buffer,
-      contentType: String,
+      data: {
+        type: Buffer,
+        required: true,
+        contentType: String,
+      },
     },
     shipping: {
       type: Boolean,
