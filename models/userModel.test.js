@@ -8,6 +8,7 @@ describe("userModel Test", () => {
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
     await mongoose.connect(mongoServer.getUri(), { useNewUrlParser: true, useUnifiedTopology: true });
+    await userModel.init();
   });
 
   afterAll(async () => {
