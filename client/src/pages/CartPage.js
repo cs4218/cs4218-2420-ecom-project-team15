@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import DropIn from "braintree-web-drop-in-react";
 import { AiFillWarning } from "react-icons/ai";
 import axios from "axios";
-import toast from "react-hot-toast";
+import toast, { ErrorIcon } from "react-hot-toast";
 import "../styles/CartStyles.css";
 
 const CartPage = () => {
@@ -21,17 +21,23 @@ const CartPage = () => {
   const totalPrice = () => {
     try {
       let total = 0;
-      cart?.map((item) => {
-        total = total + item.price;
+      cart?.forEach((item) => {
+        if (isNaN(item.price) || item.price < 0) {
+          throw new Error(`Invalid price value detected: ${item.price}`);
+        }
+        total += item.price;
       });
+
       return total.toLocaleString("en-US", {
         style: "currency",
         currency: "USD",
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      return "$0.00";
     }
   };
+
   //detele item
   const removeCartItem = (pid) => {
     try {
@@ -41,7 +47,7 @@ const CartPage = () => {
       setCart(myCart);
       localStorage.setItem("cart", JSON.stringify(myCart));
     } catch (error) {
-      console.log(error);
+      console.error("Error removing item from cart:", error);
     }
   };
 
@@ -51,7 +57,7 @@ const CartPage = () => {
       const { data } = await axios.get("/api/v1/product/braintree/token");
       setClientToken(data?.clientToken);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching token:", error);
     }
   };
   useEffect(() => {
@@ -73,7 +79,7 @@ const CartPage = () => {
       navigate("/dashboard/user/orders");
       toast.success("Payment Completed Successfully ");
     } catch (error) {
-      console.log(error);
+      console.error("Error processing payment:", error);
       setLoading(false);
     }
   };
@@ -86,7 +92,9 @@ const CartPage = () => {
               {!auth?.user ? "Hello Guest" : `Hello  ${auth?.token && auth?.user?.name}`}
               <p className="text-center">
                 {cart?.length
-                  ? `You have ${cart.length} ${cart.length == 1 ? "item" : "items"} in your cart ${auth?.token ? "" : "Please login to checkout!"}`
+                  ? `You have ${cart.length} ${cart.length == 1 ? "item" : "items"} in your cart ${
+                      auth?.token ? "" : "Please login to checkout!"
+                    }`
                   : " Your Cart Is Empty"}
               </p>
             </h1>

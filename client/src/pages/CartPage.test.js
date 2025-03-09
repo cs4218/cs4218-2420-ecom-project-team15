@@ -5,8 +5,8 @@ import axios from "axios";
 import CartPage from "../pages/CartPage";
 import { useAuth } from "../context/auth";
 import { useCart } from "../context/cart";
+import { useNavigate } from "react-router-dom";
 import "@testing-library/jest-dom/extend-expect";
-
 
 jest.mock("axios");
 
@@ -37,9 +37,15 @@ jest.mock("braintree-web-drop-in-react", () => {
   };
 });
 
+const mockedUseNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockedUseNavigate, // Return the mocked function
+}));
+
 describe("CartPage Component", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
     axios.get.mockResolvedValue({ data: { clientToken: "test-token" } });
     axios.post.mockResolvedValue({ data: { success: true } });
     jest.spyOn(console, "log").mockImplementation(() => {});
@@ -51,6 +57,10 @@ describe("CartPage Component", () => {
         addListener: jest.fn(),
         removeListener: jest.fn(),
       }));
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
   });
 
   it("renders cart page correctly with no items", async () => {
@@ -417,4 +427,212 @@ describe("CartPage Component", () => {
 
     expect(screen.queryByText("Update Address")).not.toBeInTheDocument();
   });
+
+  it("handles error in totalPrice function gracefully with Nan", async () => {
+    useAuth.mockReturnValue([{ token: "mockToken", user: { name: "Error User", address: "Error St" } }]);
+
+    useCart.mockReturnValue([[{ _id: "20", name: "Faulty Product", description: "Problem", price: NaN }], jest.fn()]);
+
+    console.log = jest.fn();
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
+    });
+
+    expect(console.error).toHaveBeenCalledWith(expect.any(Error));
+  });
+
+  it("handles error in totalPrice function gracefully with negative", async () => {
+    useAuth.mockReturnValue([{ token: "mockToken", user: { name: "Error User", address: "Error St" } }]);
+
+    useCart.mockReturnValue([
+      [{ _id: "21", name: "Broken Item", description: "Broken stuff", price: -100 }],
+      jest.fn(),
+    ]);
+
+    console.log = jest.fn();
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
+    });
+
+    expect(console.error).toHaveBeenCalledWith(expect.any(Error));
+  });
+
+  it("handles error in removeCartItem function gracefully", async () => {
+    const setCart = jest.fn(() => {
+      throw new Error("Removal Error");
+    });
+
+    useAuth.mockReturnValue([{ token: "mockToken", user: { name: "Error Tester", address: "Unknown St" } }]);
+    useCart.mockReturnValue([
+      [{ _id: "21", name: "Fffaulty Item", description: "Another error", price: 999 }],
+      setCart,
+    ]);
+
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
+    });
+
+    fireEvent.click(screen.getByText(/Remove/i));
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith("Error removing item from cart:", expect.any(Error));
+    });
+
+    console.error.mockRestore();
+  });
+
+  it("handles error in getToken function gracefully", async () => {
+    const consoleErrorMock = jest.spyOn(console, "error").mockImplementation(() => {});
+  
+    jest.spyOn(axios, "get").mockImplementation((url) => {
+      if (url.includes("/api/v1/product/braintree/token")) {
+        return Promise.reject(new Error("Token Fetch Failed"));
+      }
+      if (url.includes("/api/v1/category/get-category")) {
+        return Promise.resolve({ data: { category: [] } }); // Default behavior
+      }
+      return Promise.reject(new Error(`Unexpected API call: ${url}`));
+    });
+  
+    useAuth.mockReturnValue([{ token: "mockToken", user: { name: "Error Tester", address: "Unknown St" } }]);
+    useCart.mockReturnValue([[], jest.fn()]);
+  
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
+    });
+  
+    await waitFor(() => {
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/product/braintree/token");
+    });
+  
+    await waitFor(() => {
+      expect(consoleErrorMock).toHaveBeenCalledWith(expect.stringContaining("Error fetching token:"), expect.any(Error));
+    });
+  
+    consoleErrorMock.mockRestore();
+  });
+  
+
+  it("handles error in handlePayment function gracefully", async () => {
+    axios.post.mockRejectedValueOnce(new Error("Payment Failed"));
+
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
+    useAuth.mockReturnValue([{ token: "mockToken", user: { name: "John Error", address: "404 Error St" } }]);
+    useCart.mockReturnValue([
+      [{ _id: "25", name: "Faulty Phone", description: "Spoilt motherboard", price: 999 }],
+      jest.fn(),
+    ]);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Make Payment/i)).not.toBeDisabled();
+    });
+
+    const paymentButton = screen.getByText(/Make Payment/i);
+    fireEvent.click(paymentButton);
+
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalled();
+      expect(console.error).toHaveBeenCalledWith("Error processing payment:", expect.any(Error));
+    });
+
+    console.error.mockRestore();
+  });
+
+  it("renders 'Update Address' button when user is logged in but has NO address", async () => {
+    useAuth.mockReturnValue([{ token: "mockToken", user: { name: "Test User", address: null } }]); // No address
+    useCart.mockReturnValue([[{ _id: "2", name: "Test Product", description: "new test",price: 50 }], jest.fn()]);
+  
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
+    });
+  
+    const updateAddressButton = await screen.getByText(/Update Address/i);
+    expect(updateAddressButton).toBeInTheDocument();
+  
+    fireEvent.click(updateAddressButton);
+    await waitFor(() => {
+      expect(mockedUseNavigate).toHaveBeenCalledWith("/dashboard/user/profile");
+    });
+    
+  });
+
+  it("renders 'Update Address' button when user is logged in but has address", async () => {
+    useAuth.mockReturnValue([{ token: "mockToken", user: { name: "Test User ha", address: "have address" } }]); // No address
+    useCart.mockReturnValue([[{ _id: "2", name: "Test Product", description: "new test",price: 50 }], jest.fn()]);
+  
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
+    });
+  
+    const updateAddressButton = await screen.getByText(/Update Address/i);
+    expect(updateAddressButton).toBeInTheDocument();
+  
+    fireEvent.click(updateAddressButton);
+    await waitFor(() => {
+      expect(mockedUseNavigate).toHaveBeenCalledWith("/dashboard/user/profile");
+    });
+    
+  });
+  
+  
+  it("renders 'Please Login to checkout' button when user is not logged in", async () => {
+    useAuth.mockReturnValue([null]); 
+    useCart.mockReturnValue([[{ _id: "3", name: "Guest Product", description: "not logged in", price: 70 }], jest.fn()]);
+  
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
+    });
+  
+    const loginButton = screen.getByText(/Plase login to checkout/i); 
+    expect(loginButton).toBeInTheDocument();
+  
+    fireEvent.click(loginButton);
+  
+    await waitFor(() => {
+      expect(mockedUseNavigate).toHaveBeenCalledWith("/login", { state: "/cart" });
+    });
+  });
+  
+  
 });
