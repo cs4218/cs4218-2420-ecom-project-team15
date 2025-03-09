@@ -27,6 +27,7 @@ BRAINTREE_PRIVATE_KEY =
 3. You should be able to run the tests successfully now.
 
 ```
+npm run test
 npm run test:frontend
 npm run test:backend
 ```
@@ -37,3 +38,4 @@ npm run test:backend
 "type": "module", //insert this line
 ...
 ```
+_NOTE: Adding this in may cause the tests to fail due to ESM syntax. To execute the tests without issue, do not insert this configuration._
