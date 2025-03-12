@@ -54,6 +54,21 @@ test('able to fill out form and register new user', async ({ page }) => {
   await page.getByRole('button', { name: 'REGISTER' }).click();
   await page.waitForURL('http://localhost:3000/login');
 
+  // test login
+  await page.getByRole('textbox', { name: 'Enter Your Email' }).click();
+  await page.getByRole('textbox', { name: 'Enter Your Email' }).fill(userEmail);
+  await page.getByRole('textbox', { name: 'Enter Your Password' }).click();
+  await page.getByRole('textbox', { name: 'Enter Your Password' }).fill('password');
+  await page.getByRole('button', { name: 'LOGIN' }).click();
+  await page.waitForURL('http://localhost:3000/');
+  await expect(page.url()).toBe('http://localhost:3000/');
+
+  // test logout
+  await page.getByRole('button', { name: 'John Doe' }).click();
+  await page.getByRole('link', { name: 'Logout' }).click();
+  await page.waitForURL('http://localhost:3000/login');
+  await expect(page.url()).toBe('http://localhost:3000/login');
+
   // remove mock user if exists
   try {
     await mongoose.connect(process.env.MONGO_URL);
@@ -116,6 +131,16 @@ test('should not be able to create user with duplicate email', async ({ page }) 
   // verify that the error has occured and user was not created
   await expect(page.getByRole('status')).toContainText('Something went wrong');
   await expect(page.getByRole('main')).toContainText('REGISTER FORM');
+
+  // attempt to login
+  await page.goto('http://localhost:3000/login');
+  await page.getByRole('textbox', { name: 'Enter Your Email' }).click();
+  await page.getByRole('textbox', { name: 'Enter Your Email' }).fill(userEmail);
+  await page.getByRole('textbox', { name: 'Enter Your Password' }).click();
+  await page.getByRole('textbox', { name: 'Enter Your Password' }).fill('password123');
+  await page.getByRole('button', { name: 'LOGIN' }).click();
+  await expect(page.getByRole('status')).toContainText('Something went wrong');
+  await expect(page.getByRole('main')).toContainText('LOGIN FORM');
 
   // remove mock user if exists
   try {
