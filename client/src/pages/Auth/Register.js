@@ -31,9 +31,7 @@ const Register = () => {
     if (!phone.trim() || !phoneRegex.test(phone))
       validationErrors.phone = "Valid phone number (8-15 digits) is required";
     if (!address.trim()) validationErrors.address = "Address is required";
-    if (!DOB.trim()) {
-      validationErrors.DOB = "Date of Birth is required";
-    } else if (new Date(DOB) > today) {
+    if (new Date(DOB) > today) {
       // Check if the entered date is in the future
       validationErrors.DOB = "Date of Birth cannot be in the future";
     }
