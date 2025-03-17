@@ -142,7 +142,7 @@ describe("Auth middleware isAdmin", () => {
     // Should return error json
     expect(res.send).toHaveBeenCalledWith({
       success: false,
-      message: "UnAuthorized Access",
+      message: "Unauthorized Access",
     });
   });
 
@@ -177,6 +177,5 @@ describe("Auth middleware isAdmin", () => {
     expect(next).not.toHaveBeenCalled();
     // Should return 401 Unauthorized
     expect(res.status).toHaveBeenCalledWith(401);
-    // TODO: Check if we need to explicitly say that an error json should have been sent
   });
 });
