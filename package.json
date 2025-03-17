@@ -63,10 +63,28 @@
       "\\.(css|scss)$": "identity-obj-proxy"
     },
     "testPathIgnorePatterns": [
-      "/tests-examples/demo-todo-app.spec.js"
+      "/tests-examples/demo-todo-app.spec.js",
+      "/routes/",
+      "jest.setup.js"
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!(styleMock\\.js)$)"
-    ]
+    ],
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
   }
 }
