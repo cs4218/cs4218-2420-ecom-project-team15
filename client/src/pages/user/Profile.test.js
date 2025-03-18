@@ -9,6 +9,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 import toast from 'react-hot-toast';
 import Profile from './Profile';
+import { useAuth } from '../../context/auth'; 
 
 // Mocking dependencies
 jest.mock('axios');
@@ -65,6 +66,23 @@ describe('Profile Component', () => {
         expect(getByPlaceholderText('Enter Your Email')).toBeDisabled();
         expect(getByPlaceholderText('Enter Your Phone')).toHaveValue(mockAuthContext.user.phone);
         expect(getByPlaceholderText('Enter Your Address')).toHaveValue(mockAuthContext.user.address);
+    });
+
+    it('should render empty form fields when user data is not available', async () => {
+        const noUserMockAuth = { ...mockAuthContext, user: null };
+        useAuth.mockReturnValueOnce([noUserMockAuth, mockSetAuth]);
+        const { getByPlaceholderText } = render(
+            <MemoryRouter initialEntries={['/dashboard/user/profile']}>
+                <Routes>
+                    <Route path="/dashboard/user/profile" element={<Profile />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        expect(getByPlaceholderText('Enter Your Name')).toHaveValue('');
+        expect(getByPlaceholderText('Enter Your Email')).toHaveValue('');
+        expect(getByPlaceholderText('Enter Your Phone')).toHaveValue('');
+        expect(getByPlaceholderText('Enter Your Address')).toHaveValue('');
     });
 
     it('should handle form updates', async () => {
