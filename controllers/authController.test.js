@@ -35,7 +35,7 @@ describe("test registerController", () => {
     await registerController(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith(expect.objectContaining({
-      error: expect.stringMatching(/name/i),
+      message: expect.stringMatching(/name/i),
     }));
   });
 
