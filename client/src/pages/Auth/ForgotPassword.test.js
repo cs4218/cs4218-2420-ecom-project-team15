@@ -6,6 +6,7 @@ import "@testing-library/jest-dom/extend-expect";
 import toast from "react-hot-toast";
 import ForgotPassword from "./ForgotPassword";
 import { useNavigate } from "react-router-dom";
+import { expect } from "@playwright/test";
 
 jest.mock("axios");
 jest.mock("react-hot-toast");
@@ -50,8 +51,10 @@ describe("ForgotPassword Component", () => {
 
   it("inputs should be initially empty", () => {
     const { getByPlaceholderText } = render(
-      <MemoryRouter>
-        <ForgotPassword />
+      <MemoryRouter initialEntries={["/forgot-password"]}>
+        <Routes>
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Routes>
       </MemoryRouter>
     );
 
@@ -62,8 +65,10 @@ describe("ForgotPassword Component", () => {
 
   it("should allow typing in input fields", () => {
     const { getByPlaceholderText } = render(
-      <MemoryRouter>
-        <ForgotPassword />
+      <MemoryRouter initialEntries={["/forgot-password"]}>
+        <Routes>
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Routes>
       </MemoryRouter>
     );
 
@@ -94,8 +99,10 @@ describe("ForgotPassword Component", () => {
     useNavigate.mockReturnValue(navigate);
 
     const { getByPlaceholderText, getByText } = render(
-      <MemoryRouter>
-        <ForgotPassword />
+      <MemoryRouter initialEntries={["/forgot-password"]}>
+        <Routes>
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Routes>
       </MemoryRouter>
     );
 
@@ -129,8 +136,10 @@ describe("ForgotPassword Component", () => {
     });
 
     const { getByPlaceholderText, getByText } = render(
-      <MemoryRouter>
-        <ForgotPassword />
+      <MemoryRouter initialEntries={["/forgot-password"]}>
+        <Routes>
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Routes>
       </MemoryRouter>
     );
 
@@ -152,8 +161,10 @@ describe("ForgotPassword Component", () => {
     axios.post.mockRejectedValueOnce(new Error("Something went wrong"));
 
     const { getByPlaceholderText, getByText } = render(
-      <MemoryRouter>
-        <ForgotPassword />
+      <MemoryRouter initialEntries={["/forgot-password"]}>
+        <Routes>
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Routes>
       </MemoryRouter>
     );
 
@@ -169,5 +180,30 @@ describe("ForgotPassword Component", () => {
     fireEvent.click(getByText("Forgot Password"));
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith("Something went wrong"));
+  });
+
+  it('should display error messages if fields are invalid', async () => {
+    const { getByText, getByPlaceholderText } = render(
+      <MemoryRouter initialEntries={["/forgot-password"]}>
+        <Routes>
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.change(getByPlaceholderText("Enter Your Email"), {
+      target: { value: "test@example" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your Answer"), {
+      target: { value: "my answer" },
+    });
+    fireEvent.change(getByPlaceholderText("Enter Your New Password"), {
+      target: { value: "new" },
+    });
+    fireEvent.click(getByText("Forgot Password"));
+
+    expect(getByText("Valid email is required")).toBeInTheDocument();
+    expect(getByText("Password must be at least 6 characters long")).toBeInTheDocument();
+    expect(axios.post).not.toHaveBeenCalled();
   });
 });
