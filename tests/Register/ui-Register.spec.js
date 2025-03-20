@@ -38,8 +38,8 @@ test('able to fill out form and register new user', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Enter Your Address' }).click();
   await page.getByRole('textbox', { name: 'Enter Your Address' }).fill('Main St 1');
   await page.getByPlaceholder('Enter Your DOB').fill('2000-01-01');
-  await page.getByRole('textbox', { name: 'What is Your Favorite sports' }).click();
-  await page.getByRole('textbox', { name: 'What is Your Favorite sports' }).fill('Football');
+  await page.getByRole('textbox', { name: 'What is Your Favorite Sport' }).click();
+  await page.getByRole('textbox', { name: 'What is Your Favorite Sport' }).fill('Football');
 
   // check that details are displayed correctly
   await expect(page.getByRole('textbox', { name: 'Enter Your Name' })).toHaveValue('John Doe');
@@ -48,7 +48,7 @@ test('able to fill out form and register new user', async ({ page }) => {
   await expect(page.getByRole('textbox', { name: 'Enter Your Phone' })).toHaveValue('98765432');
   await expect(page.getByRole('textbox', { name: 'Enter Your Address' })).toHaveValue('Main St 1');
   await expect(page.getByPlaceholder('Enter Your DOB')).toHaveValue('2000-01-01');
-  await expect(page.getByRole('textbox', { name: 'What is Your Favorite sports' })).toHaveValue('Football');
+  await expect(page.getByRole('textbox', { name: 'What is Your Favorite Sport' })).toHaveValue('Football');
   
   // submit form
   await page.getByRole('button', { name: 'REGISTER' }).click();
@@ -113,8 +113,8 @@ test('should not be able to create user with duplicate email', async ({ page }) 
   await page.getByRole('textbox', { name: 'Enter Your Address' }).click();
   await page.getByRole('textbox', { name: 'Enter Your Address' }).fill('Main St 2');
   await page.getByPlaceholder('Enter Your DOB').fill('2000-01-02');
-  await page.getByRole('textbox', { name: 'What is Your Favorite sports' }).click();
-  await page.getByRole('textbox', { name: 'What is Your Favorite sports' }).fill('Basketball');
+  await page.getByRole('textbox', { name: 'What is Your Favorite Sport' }).click();
+  await page.getByRole('textbox', { name: 'What is Your Favorite Sport' }).fill('Basketball');
 
   // check that details are displayed correctly
   await expect(page.getByRole('textbox', { name: 'Enter Your Name' })).toHaveValue('Jane Doe');
@@ -123,7 +123,7 @@ test('should not be able to create user with duplicate email', async ({ page }) 
   await expect(page.getByRole('textbox', { name: 'Enter Your Phone' })).toHaveValue('98765433');
   await expect(page.getByRole('textbox', { name: 'Enter Your Address' })).toHaveValue('Main St 2');
   await expect(page.getByPlaceholder('Enter Your DOB')).toHaveValue('2000-01-02');
-  await expect(page.getByRole('textbox', { name: 'What is Your Favorite sports' })).toHaveValue('Basketball');
+  await expect(page.getByRole('textbox', { name: 'What is Your Favorite Sport' })).toHaveValue('Basketball');
   
   // submit form
   await page.getByRole('button', { name: 'REGISTER' }).click();
