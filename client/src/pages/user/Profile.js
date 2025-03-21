@@ -16,17 +16,27 @@ const Profile = () => {
 
   //get user data
   useEffect(() => {
-    const { email, name, phone, address } = auth?.user;
-    setName(name);
-    setPhone(phone);
-    setEmail(email);
-    setAddress(address);
+    if (auth?.user) {
+      const { email, name, phone, address } = auth.user;
+      setName(name);
+      setPhone(phone);
+      setEmail(email);
+      setAddress(address);
+    }
   }, [auth?.user]);
 
   // form function
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (password && password.length < 6) {
+        toast.error("Password must be at least 6 characters long");
+        return;
+      }
+      if (phone && ((phone.length !== 8 && phone.length !== 10) || !/^\d+$/.test(phone))) {
+        toast.error("Phone number must be 8 or 10 digits long");
+        return;
+      }
       const { data } = await axios.put("/api/v1/auth/profile", {
         name,
         email,

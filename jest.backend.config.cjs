@@ -11,7 +11,8 @@ module.exports = {
     "<rootDir>/models/*.test.js",
     "<rootDir>/helpers/*.test.js",
     "<rootDir>/config/*.test.js",
-    "<rootDir>/middlewares/*.test.js"
+    "<rootDir>/middlewares/*.test.js",
+    "<rootDir>/controllers/integration-tests/*"
   ],
 
   // jest code coverage

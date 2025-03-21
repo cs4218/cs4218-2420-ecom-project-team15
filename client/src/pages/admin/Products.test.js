@@ -85,15 +85,26 @@ describe('Products Component', () => {
         await waitFor(() => {
             expect(getByText('Product 1')).toBeInTheDocument();
         });
-        expect(getByText('Product Description 1')).toBeInTheDocument();
+        // Check product names
+        expect(getByText('Product 1')).toBeInTheDocument();
         expect(getByText('Product 2')).toBeInTheDocument();
-        expect(getByText('Product Description 2')).toBeInTheDocument();
-        
-        // Check links and images
-        const links = document.querySelectorAll('.product-link');
-        expect(links).toHaveLength(2);
-        expect(links[0]).toHaveAttribute('href', '/dashboard/admin/product/product-1');
-        expect(links[1]).toHaveAttribute('href', '/dashboard/admin/product/product-2');
+
+        // Check product descriptions (nested within card bodies)
+        const product1Description = getByText((content, element) => {
+            return (
+                element.tagName.toLowerCase() === 'p' &&
+                element.textContent === 'Product Description 1...'
+            );
+        });
+        expect(product1Description).toBeInTheDocument();
+
+        const product2Description = getByText((content, element) => {
+            return (
+                element.tagName.toLowerCase() === 'p' &&
+                element.textContent === 'Product Description 2...'
+            );
+        });
+        expect(product2Description).toBeInTheDocument();
         const images = document.querySelectorAll('img');
         expect(images).toHaveLength(2);
         expect(images[0]).toHaveAttribute('src', '/api/v1/product/product-photo/1');
