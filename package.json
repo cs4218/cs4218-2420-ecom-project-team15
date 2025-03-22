@@ -65,7 +65,8 @@
     "testPathIgnorePatterns": [
       "/tests-examples/demo-todo-app.spec.js",
       "/routes/",
-      "jest.setup.js"
+      "jest.setup.js",
+      "/client/src/pages/user/Profile.integration.test.js"
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!(styleMock\\.js)$)"
