@@ -95,6 +95,7 @@ const Header = () => {
                       role="button"
                       data-bs-toggle="dropdown"
                       style={{ border: "none" }}
+                      test-id="username"
                     >
                       {auth?.user?.name}
                     </NavLink>

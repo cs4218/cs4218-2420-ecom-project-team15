@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Layout from "./../components/Layout";
+import Layout from "../components/Layout";
 import { useCart } from "../context/cart";
 import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
 import DropIn from "braintree-web-drop-in-react";
 import { AiFillWarning } from "react-icons/ai";
 import axios from "axios";
-import toast from "react-hot-toast";
+import toast, { ErrorIcon } from "react-hot-toast";
 import "../styles/CartStyles.css";
 
 const CartPage = () => {
@@ -15,23 +15,30 @@ const CartPage = () => {
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingImages, setLoadingImages] = useState({}); // Track image loading state
   const navigate = useNavigate();
 
   //total price
   const totalPrice = () => {
     try {
       let total = 0;
-      cart?.map((item) => {
-        total = total + item.price;
+      cart?.forEach((item) => {
+        if (isNaN(item.price) || item.price < 0) {
+          throw new Error(`Invalid price value detected: ${item.price}`);
+        }
+        total += item.price;
       });
+
       return total.toLocaleString("en-US", {
         style: "currency",
         currency: "USD",
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      return "$0.00";
     }
   };
+
   //detele item
   const removeCartItem = (pid) => {
     try {
@@ -41,7 +48,7 @@ const CartPage = () => {
       setCart(myCart);
       localStorage.setItem("cart", JSON.stringify(myCart));
     } catch (error) {
-      console.log(error);
+      console.error("Error removing item from cart:", error);
     }
   };
 
@@ -51,7 +58,7 @@ const CartPage = () => {
       const { data } = await axios.get("/api/v1/product/braintree/token");
       setClientToken(data?.clientToken);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching token:", error);
     }
   };
   useEffect(() => {
@@ -73,23 +80,32 @@ const CartPage = () => {
       navigate("/dashboard/user/orders");
       toast.success("Payment Completed Successfully ");
     } catch (error) {
-      console.log(error);
+      console.error("Error processing payment:", error);
       setLoading(false);
     }
   };
+
+  // Handle image load
+  const handleImageLoad = (id) => {
+    setLoadingImages((prev) => ({ ...prev, [id]: false }));
+  };
+
+  // Handle image error
+  const handleImageError = (id) => {
+    setLoadingImages((prev) => ({ ...prev, [id]: false }));
+  };
+
   return (
     <Layout>
       <div className=" cart-page">
         <div className="row">
           <div className="col-md-12">
             <h1 className="text-center bg-light p-2 mb-1">
-              {!auth?.user
-                ? "Hello Guest"
-                : `Hello  ${auth?.token && auth?.user?.name}`}
+              {!auth?.user ? "Hello Guest" : `Hello  ${auth?.token && auth?.user?.name}`}
               <p className="text-center">
                 {cart?.length
-                  ? `You Have ${cart.length} items in your cart ${
-                      auth?.token ? "" : "please login to checkout !"
+                  ? `You have ${cart.length} ${cart.length == 1 ? "item" : "items"} in your cart ${
+                      auth?.token ? "" : "Please login to checkout!"
                     }`
                   : " Your Cart Is Empty"}
               </p>
@@ -102,24 +118,25 @@ const CartPage = () => {
               {cart?.map((p) => (
                 <div className="row card flex-row" key={p._id}>
                   <div className="col-md-4">
+                    {loadingImages[p._id] && <p>Loading...</p>}
                     <img
                       src={`/api/v1/product/product-photo/${p._id}`}
                       className="card-img-top"
                       alt={p.name}
                       width="100%"
                       height={"130px"}
+                      onLoad={() => handleImageLoad(p._id)}
+                      onError={() => handleImageError(p._id)}
+                      style={{ display: loadingImages[p._id] ? "none" : "block" }}
                     />
                   </div>
                   <div className="col-md-4">
                     <p>{p.name}</p>
-                    <p>{p.description.substring(0, 30)}</p>
+                    <p>{p.description ? p.description.substring(0, 30) : "No description available"}</p>
                     <p>Price : {p.price}</p>
                   </div>
                   <div className="col-md-4 cart-remove-btn">
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => removeCartItem(p._id)}
-                    >
+                    <button className="btn btn-danger" onClick={() => removeCartItem(p._id)}>
                       Remove
                     </button>
                   </div>
@@ -134,12 +151,9 @@ const CartPage = () => {
               {auth?.user?.address ? (
                 <>
                   <div className="mb-3">
-                    <h4>Current Address</h4>
+                    <h4>Current Address:</h4>
                     <h5>{auth?.user?.address}</h5>
-                    <button
-                      className="btn btn-outline-warning"
-                      onClick={() => navigate("/dashboard/user/profile")}
-                    >
+                    <button className="btn btn-outline-warning" onClick={() => navigate("/dashboard/user/profile")}>
                       Update Address
                     </button>
                   </div>
@@ -147,10 +161,7 @@ const CartPage = () => {
               ) : (
                 <div className="mb-3">
                   {auth?.token ? (
-                    <button
-                      className="btn btn-outline-warning"
-                      onClick={() => navigate("/dashboard/user/profile")}
-                    >
+                    <button className="btn btn-outline-warning" onClick={() => navigate("/dashboard/user/profile")}>
                       Update Address
                     </button>
                   ) : (
@@ -162,7 +173,7 @@ const CartPage = () => {
                         })
                       }
                     >
-                      Plase Login to checkout
+                      Please login to checkout
                     </button>
                   )}
                 </div>
