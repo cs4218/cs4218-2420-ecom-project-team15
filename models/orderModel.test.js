@@ -54,7 +54,7 @@ describe("Order Model Unit Tests", () => {
     const savedOrder = await order.save();
 
     expect(savedOrder._id).toBeDefined();
-    expect(savedOrder.status).toBe("Not Process"); // Default status
+    expect(savedOrder.status).toBe("Not Processed"); // Default status
   });
 
   it("should fail to save an order with an invalid status", async () => {
@@ -89,7 +89,7 @@ describe("Order Model Unit Tests", () => {
   });
 
   it("should allow an order to be saved with different valid statuses", async () => {
-    const validStatuses = ["Not Process", "Processing", "Shipped", "Delivered", "Cancelled"];
+    const validStatuses = ["Not Processed", "Processing", "Shipped", "Delivered", "Cancelled"];
 
     for (const status of validStatuses) {
       const order = new Order({
