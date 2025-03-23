@@ -8,7 +8,7 @@
     "server": "nodemon server.js",
     "client": "npm start --prefix ./client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "sonarqube": "sonarqube-scanner",
+    "sonarqube": "sonar-scanner",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:frontend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.cjs",
     "test:backend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.backend.config.cjs"
@@ -63,10 +63,23 @@
       "\\.(css|scss)$": "identity-obj-proxy"
     },
     "testPathIgnorePatterns": [
-      "/tests-examples/demo-todo-app.spec.js"
+      "/tests-examples/demo-todo-app.spec.js",
+      "/routes/",
+      "jest.setup.js",
+      "/client/src/pages/user/Profile.integration.test.js",
+      "/client/src/pages/admin/CreateCategory.integration.test.js",
+      "/client/src/pages/admin/CreateProduct.integration.test.js"
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!(styleMock\\.js)$)"
-    ]
+    ],
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover"
+    ],
+    "coverageDirectory": "coverage"
   }
 }

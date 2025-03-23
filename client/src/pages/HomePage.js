@@ -20,6 +20,15 @@ const HomePage = () => {
   const [filteredTotal, setFilteredTotal] = useState(0); // Track filtered total
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState({}); // State for image loading
+
+  // Function to handle image load events
+  const handleImageLoad = (productId) => {
+    setImagesLoaded((prev) => ({
+      ...prev,
+      [productId]: true,
+    }));
+  };
 
   // Fetch categories
   const getAllCategory = async () => {
@@ -30,15 +39,15 @@ const HomePage = () => {
         setCategories([]);
         return;
       }
-
+  
       const { data } = response;
       if (!data.success || !Array.isArray(data.category)) {
         console.warn("No categories found or invalid data format");
         setCategories([]);
         return;
       }
-
-      setCategories(data.category);
+  
+      setCategories(data.category); 
     } catch (error) {
       console.error("Error fetching categories:", error);
       setCategories([]);
@@ -50,59 +59,59 @@ const HomePage = () => {
     getTotal();
   }, []);
 
-  // Fetch products
-  const getAllProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`/api/v1/product/product-list/${page}`);
-      if (!response || !response.data) {
-        console.warn("Invalid response: No data received");
-        setProducts([]);
-        return;
-      }
-
-      const { data } = response;
-
-      if (!Array.isArray(data.products)) {
-        console.warn("Invalid product list received:", data.products);
-        setProducts([]);
-        return;
-      }
-
-      setProducts(data.products);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setProducts([]);
-    } finally {
-      setLoading(false);
+  //get products
+const getAllProducts = async () => {
+  try {
+    setLoading(true);
+    const response = await axios.get(`/api/v1/product/product-list/${page}`);
+    
+    if (!response || !response.data) {
+      console.warn("Invalid response: No data received");
+      setProducts([]); 
+      return;
     }
-  };
 
-  // Get total product count
+    const { data } = response;
+
+    if (!Array.isArray(data.products)) {
+      console.warn("Invalid product list received:", data.products);
+      setProducts([]); 
+      return;
+    }
+
+    setProducts(data.products); 
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    setProducts([]); 
+  } finally {
+    setLoading(false); 
+  }
+};
+
+
+  //getTOtal COunt
   const getTotal = async () => {
     try {
       const response = await axios.get("/api/v1/product/product-count");
-      console.log(response)
+  
       if (!response || !response.data) {
         console.warn("Invalid response: No data received");
         setTotal(0);
         return;
       }
-
+  
       const { data } = response;
-
+  
       if (typeof data.total !== "number") {
         console.warn("Invalid product count received:", data.total);
         setTotal(0);
         return;
       }
-
-      setTotal(data.total);
-      setFilteredTotal(data.total); // Set filtered total to total initially
+  
+      setTotal(data.total); 
     } catch (error) {
       console.error("Error fetching product count:", error);
-      setTotal(0);
-      setFilteredTotal(0);
+      setTotal(0); 
     }
   };
 
@@ -110,8 +119,7 @@ const HomePage = () => {
     if (page === 1) return;
     loadMore();
   }, [page]);
-
-  // Load more products
+  //load more
   const loadMore = async () => {
     try {
       setLoading(true);
@@ -134,6 +142,7 @@ const HomePage = () => {
     }
     setChecked(all);
   };
+
   useEffect(() => {
     if (!checked.length && !radio.length) {
       getAllProducts(); 
@@ -152,14 +161,12 @@ const HomePage = () => {
         checked,
         radio,
       });
-      console.log(checked,radio, data?.products)
       setProducts(data?.products);
-      setFilteredTotal(data?.total); // Set the filtered product count
+      setFilteredTotal(data?.total); 
     } catch (error) {
       console.log(error);
     }
   };
-
   return (
     <Layout title={"All Products - Best Offers "}>
       <img
@@ -205,10 +212,15 @@ const HomePage = () => {
           <div className="d-flex flex-wrap">
             {products?.map((p) => (
               <div className="card m-2" key={p._id}>
+                {!imagesLoaded[p._id] && (
+                  <div className="image-placeholder">Loading...</div>
+                )}
                 <img
                   src={`/api/v1/product/product-photo/${p._id}`}
                   className="card-img-top"
                   alt={p.name}
+                  onLoad={() => handleImageLoad(p._id)}
+                  style={{ display: imagesLoaded[p._id] ? "block" : "none" }}
                 />
                 <div className="card-body">
                   <div className="card-name-price">

@@ -185,6 +185,44 @@ describe("CartPage Component", () => {
     expect(screen.getByText(/Total : \$150\.20/i)).toBeInTheDocument();
   });
 
+  it("display $0 when value is negative", async () => {
+    useAuth.mockReturnValue([{ token: "mockToken", user: { name: "Johnny", address: "Tembu Street" } }]);
+    useCart.mockReturnValue([
+      [
+        { _id: "3", name: "Shoes", description: "Marathon shoes", price: -100 },
+      ],
+      jest.fn(),
+    ]);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText(/Total : \$0\.00/i)).toBeInTheDocument();
+  });
+
+  it("calculates total price correctly when cart is empty", async () => {
+    useAuth.mockReturnValue([{ token: "mockToken", user: { name: "Johnny", address: "Tembu Street" } }]);
+    useCart.mockReturnValue([
+      [],
+      jest.fn(),
+    ]);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CartPage />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText(/Total : \$0\.00/i)).toBeInTheDocument();
+  });
+
   it("removes item from cart when there is only 1 item", async () => {
     const setCart = jest.fn();
     const mockSetItem = jest.spyOn(localStorage.__proto__, "setItem");
@@ -624,11 +662,10 @@ describe("CartPage Component", () => {
       );
     });
   
-    const loginButton = screen.getByText(/Plase login to checkout/i); 
+    const loginButton = screen.getByRole("button", { name: /Please login to checkout/i });
     expect(loginButton).toBeInTheDocument();
   
     fireEvent.click(loginButton);
-  
     await waitFor(() => {
       expect(mockedUseNavigate).toHaveBeenCalledWith("/login", { state: "/cart" });
     });

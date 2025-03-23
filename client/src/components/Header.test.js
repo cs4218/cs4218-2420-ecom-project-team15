@@ -18,7 +18,9 @@ jest.mock("../context/cart", () => ({
 
 jest.mock("../hooks/useCategory", () => jest.fn());
 
-jest.mock("../components/Form/SearchInput", () => () => <div data-testid="search-input-mock" />);
+jest.mock("../components/Form/SearchInput", () => () => (
+  <div data-testid="search-input-mock" />
+));
 
 describe("Header Component", () => {
   beforeEach(() => {
@@ -53,11 +55,17 @@ describe("Header Component", () => {
     expect(screen.getByText("Home")).toBeInTheDocument();
     expect(screen.getByText("Categories")).toBeInTheDocument();
     expect(screen.getByText("Home")).toHaveAttribute("href", "/");
-    expect(screen.getByText("Categories")).toHaveAttribute("href", "/categories");
+    expect(screen.getByText("Categories")).toHaveAttribute(
+      "href",
+      "/categories"
+    );
   });
 
   it("renders user name, dashboard and logout link for authenticated users", () => {
-    useAuth.mockReturnValue([{ user: { name: "John Doe", role: 0 } }, jest.fn()]);
+    useAuth.mockReturnValue([
+      { user: { name: "John Doe", role: 0 } },
+      jest.fn(),
+    ]);
     useCart.mockReturnValue([[]]);
     useCategory.mockReturnValue([]);
 
@@ -107,9 +115,52 @@ describe("Header Component", () => {
     expect(screen.getByText("3")).toBeInTheDocument(); // Badge count
   });
 
+  it("shows cart count even when 0", () => {
+    useAuth.mockReturnValue([null, jest.fn()]);
+    useCart.mockReturnValue([[]]);
+    useCategory.mockReturnValue([]);
+
+    render(
+      <BrowserRouter>
+        <Header />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText("Cart")).toBeInTheDocument();
+    expect(screen.getByText("0")).toBeInTheDocument(); // Badge count
+  });
+
+  it("renders the categories correctly", () => {
+    useAuth.mockReturnValue([null, jest.fn()]);
+    useCart.mockReturnValue([[]]);
+    const category1 = { name: "Clothes", slug: "clothes" };
+    const category2 = { name: "Books", slug: "Books" };
+    useCategory.mockReturnValue([category1, category2]);
+
+    render(
+      <BrowserRouter>
+        <Header />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText(category1.name)).toBeInTheDocument();
+    expect(screen.getByText(category2.name)).toBeInTheDocument();
+    expect(screen.getByText(category1.name)).toHaveAttribute(
+      "href",
+      `/category/${category1.slug}`
+    );
+    expect(screen.getByText(category2.name)).toHaveAttribute(
+      "href",
+      `/category/${category2.slug}`
+    );
+  });
+
   it("calls handleLogout when Logout is clicked", () => {
     const setAuthMock = jest.fn();
-    useAuth.mockReturnValue([{ user: { name: "John Doe", role: 0 } }, setAuthMock]);
+    useAuth.mockReturnValue([
+      { user: { name: "John Doe", role: 0 } },
+      setAuthMock,
+    ]);
     useCart.mockReturnValue([[]]);
     useCategory.mockReturnValue([]);
 
@@ -124,5 +175,49 @@ describe("Header Component", () => {
 
     expect(setAuthMock).toHaveBeenCalledWith({ user: null, token: "" });
     expect(localStorage.getItem("auth")).toBe(null);
+  });
+
+  it("navigates to the correct dashboard when the user is an admin", () => {
+    const setAuthMock = jest.fn();
+    useAuth.mockReturnValue([
+      { user: { name: "John Doe", role: 1 } },
+      setAuthMock,
+    ]);
+    useCart.mockReturnValue([[]]);
+    useCategory.mockReturnValue([]);
+
+    render(
+      <BrowserRouter>
+        <Header />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Dashboard")).toHaveAttribute(
+      "href",
+      "/dashboard/admin"
+    );
+  });
+
+  it("navigates to the correct dashboard when the user is just a user", () => {
+    const setAuthMock = jest.fn();
+    useAuth.mockReturnValue([
+      { user: { name: "John Doe", role: 0 } },
+      setAuthMock,
+    ]);
+    useCart.mockReturnValue([[]]);
+    useCategory.mockReturnValue([]);
+
+    render(
+      <BrowserRouter>
+        <Header />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Dashboard")).toHaveAttribute(
+      "href",
+      "/dashboard/user"
+    );
   });
 });

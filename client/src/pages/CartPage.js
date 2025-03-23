@@ -15,6 +15,7 @@ const CartPage = () => {
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingImages, setLoadingImages] = useState({}); // Track image loading state
   const navigate = useNavigate();
 
   //total price
@@ -83,6 +84,17 @@ const CartPage = () => {
       setLoading(false);
     }
   };
+
+  // Handle image load
+  const handleImageLoad = (id) => {
+    setLoadingImages((prev) => ({ ...prev, [id]: false }));
+  };
+
+  // Handle image error
+  const handleImageError = (id) => {
+    setLoadingImages((prev) => ({ ...prev, [id]: false }));
+  };
+
   return (
     <Layout>
       <div className=" cart-page">
@@ -106,17 +118,21 @@ const CartPage = () => {
               {cart?.map((p) => (
                 <div className="row card flex-row" key={p._id}>
                   <div className="col-md-4">
+                    {loadingImages[p._id] && <p>Loading...</p>}
                     <img
                       src={`/api/v1/product/product-photo/${p._id}`}
                       className="card-img-top"
                       alt={p.name}
                       width="100%"
                       height={"130px"}
+                      onLoad={() => handleImageLoad(p._id)}
+                      onError={() => handleImageError(p._id)}
+                      style={{ display: loadingImages[p._id] ? "none" : "block" }}
                     />
                   </div>
                   <div className="col-md-4">
                     <p>{p.name}</p>
-                    <p>{p.description.substring(0, 30)}</p>
+                    <p>{p.description ? p.description.substring(0, 30) : "No description available"}</p>
                     <p>Price : {p.price}</p>
                   </div>
                   <div className="col-md-4 cart-remove-btn">
@@ -157,7 +173,7 @@ const CartPage = () => {
                         })
                       }
                     >
-                      Plase Login to checkout
+                      Please login to checkout
                     </button>
                   )}
                 </div>
