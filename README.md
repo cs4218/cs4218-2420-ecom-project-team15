@@ -59,3 +59,5 @@ _NOTE: Adding this in may cause the tests to fail due to ESM syntax. To execute 
 - CreateCategory.integration.test.js
 - CreateProduct.integration.test.js
 - Categories.integration.test.js
+- Orders.integration.test.js",
+- CartPage.integration.test.js",
