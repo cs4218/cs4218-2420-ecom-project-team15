@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import userModel from "../models/userModel.js";
-import { comparePassword, hashPassword } from "../helpers/authHelper.js";
-import { registerController, loginController, forgotPasswordController, testController} from "./authController.js";
+import userModel from "../../models/userModel.js";
+import { comparePassword, hashPassword } from "../../helpers/authHelper.js";
+import { registerController, loginController, forgotPasswordController, testController} from "../authController.js";
 
 let mongoServer;
 const collectionName = "users";
