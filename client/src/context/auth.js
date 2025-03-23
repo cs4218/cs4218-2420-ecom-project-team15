@@ -32,4 +32,4 @@ const AuthProvider = ({ children }) => {
 
 const useAuth = () => useContext(AuthContext);
 
-export { useAuth, AuthProvider };
+export { useAuth, AuthProvider, AuthContext };
