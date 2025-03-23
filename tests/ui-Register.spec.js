@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import dotenv from "dotenv";
 import mongoose from 'mongoose';
-import userModel from '../../models/userModel'
+import userModel from '../models/userModel'
 
 dotenv.config();
 
