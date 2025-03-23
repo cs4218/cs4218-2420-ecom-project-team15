@@ -1,7 +1,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import categoryModel from "../models/categoryModel";
+import categoryModel from "../../models/categoryModel";
 import mongoose from "mongoose";
-import { getAllCategoryController, singleCategoryController } from "./categoryController";
+import { getAllCategoryController, singleCategoryController } from "../categoryController";
 
 describe("getAllCategoryController", () => {
     let mongoServer;
