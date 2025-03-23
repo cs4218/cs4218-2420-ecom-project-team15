@@ -41,6 +41,8 @@ module.exports = {
   ],
   coveragePathIgnorePatterns: [
     "client/src/components/Routes/AdminRoute.js",
+    "/client/src/pages/user/Orders.integration.test.js",
+    "/client/src/pages/CartPage.integration.test.js",
   ],
   testPathIgnorePatterns: [
     "/client/src/pages/user/Orders.integration.test.js",
