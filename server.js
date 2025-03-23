@@ -28,15 +28,22 @@ app.use("/api/v1/product", productRoutes);
 
 // rest api
 
-app.get('/', (req,res) => {
+app.get('/', (_, res) => {
     res.send("<h1>Welcome to ecommerce app</h1>");
 });
 
 const PORT = process.env.PORT || 6060;
 
 if (process.env.DEV_MODE !== 'test') {
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
         console.log(`Server running on ${process.env.DEV_MODE} mode on ${PORT}`.bgCyan.white);
+    });
+
+    server.on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+            console.log(`Port ${PORT} is in use, trying another port...`.bgYellow.black);
+            server.listen(0); // Dynamically assign an available port
+        }
     });
 }
 
