@@ -437,6 +437,14 @@ describe("UpdateProduct Component", () => {
                 data: { success: true, message: "Product updated" },
             });
 
+            const mockBlob = new Blob(["fake image content"], { type: "image/jpeg" });
+            axios.get.mockResolvedValue({
+                data: mockBlob,
+                headers: {
+                    "content-type": "image/jpeg",
+                },
+            });
+
             await act(async () => {
                 render(
                     <MemoryRouter initialEntries={["/admin/product/macbook"]}>
@@ -457,7 +465,7 @@ describe("UpdateProduct Component", () => {
             expect(toast.success).toHaveBeenCalled();
             expect(mockNavigate).toHaveBeenCalledWith("/dashboard/admin/products");
         });
-    
+
         test("error when price field is <= 0", async () => {
             await act(async () => {
                 render(
@@ -482,6 +490,14 @@ describe("UpdateProduct Component", () => {
         test("price field is 0.01", async () => {
             axios.put.mockResolvedValueOnce({
                 data: { success: true, message: "Product updated" },
+            });
+
+            const mockBlob = new Blob(["fake image content"], { type: "image/jpeg" });
+            axios.get.mockResolvedValue({
+                data: mockBlob,
+                headers: {
+                    "content-type": "image/jpeg",
+                },
             });
 
             await act(async () => {
@@ -531,6 +547,14 @@ describe("UpdateProduct Component", () => {
                 data: { success: true, message: "Product updated" },
             });
 
+            const mockBlob = new Blob(["fake image content"], { type: "image/jpeg" });
+            axios.get.mockResolvedValue({
+                data: mockBlob,
+                headers: {
+                    "content-type": "image/jpeg",
+                },
+            });
+
             await act(async () => {
                 render(
                     <MemoryRouter initialEntries={["/admin/product/macbook"]}>
@@ -551,7 +575,7 @@ describe("UpdateProduct Component", () => {
             expect(toast.success).toHaveBeenCalled();
             expect(mockNavigate).toHaveBeenCalledWith("/dashboard/admin/products");
         });
-    
+
         test("error when quantity field is <= 0", async () => {
             await act(async () => {
                 render(
@@ -576,6 +600,14 @@ describe("UpdateProduct Component", () => {
         test("quantity field is 1", async () => {
             axios.put.mockResolvedValueOnce({
                 data: { success: true, message: "Product updated" },
+            });
+
+            const mockBlob = new Blob(["fake image content"], { type: "image/jpeg" });
+            axios.get.mockResolvedValue({
+                data: mockBlob,
+                headers: {
+                    "content-type": "image/jpeg",
+                },
             });
 
             await act(async () => {
