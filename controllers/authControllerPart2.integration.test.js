@@ -37,7 +37,7 @@ beforeAll(async () => {
     products: [productId],
     payment: { amount: 50 },
     buyer: userId,
-    status: "Not Process",
+    status: "Not Processed",
   });
 
   orderId = order._id;
@@ -79,7 +79,7 @@ beforeEach(async () => {
       products: [product._id],
       payment: { amount: 100 },
       buyer: userId,
-      status: 'Not Process',
+      status: 'Not Processed',
     });
   
     orderId = newOrder._id;

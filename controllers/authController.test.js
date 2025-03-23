@@ -482,7 +482,7 @@ describe("test getOrdersController", () => {
             products: ["1", "2"],
             payment: {},
             buyer: {_id: "1", name: "John Doe"},
-            status: 'Not Process'
+            status: 'Not Processed'
           },
           {
             _id: "2",
@@ -506,7 +506,7 @@ describe("test getOrdersController", () => {
         products: ["1", "2"],
         payment: {},
         buyer: {_id: "1", name: "John Doe"},
-        status: 'Not Process'
+        status: 'Not Processed'
       },
       {
         _id: "2",
@@ -554,7 +554,7 @@ describe("test getAllOrdersController", () => {
               products: ["1", "2"],
               payment: {},
               buyer: {_id: "1", name: "John Doe"},
-              status: 'Not Process',
+              status: 'Not Processed',
               createdAt: "2025-02-09T10:30:00Z",
             },
             {
@@ -580,7 +580,7 @@ describe("test getAllOrdersController", () => {
         products: ["1", "2"],
         payment: {},
         buyer: {_id: "1", name: "John Doe"},
-        status: 'Not Process',
+        status: 'Not Processed',
         createdAt: "2025-02-09T10:30:00Z",
       },
       {
