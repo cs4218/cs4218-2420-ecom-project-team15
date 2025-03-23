@@ -1,5 +1,5 @@
 import axios from "axios";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor, within, fireEvent } from "@testing-library/react";
 import HomePage from "./HomePage";
 import { AuthContext } from "../context/auth";
 import { SearchProvider } from "../context/search";
@@ -61,8 +61,11 @@ describe("HomePage — Real View -> Controller -> Model Integration Tests", () =
       expect(screen.getByText(/\$78.00/)).toBeInTheDocument();
     });
 
-    const addToCartButton = screen.getAllByText(/Add To Cart/);
-    fireEvent.click(addToCartButton[0]);
+    const productCard = screen.getByText(/William 2025 Racing Kit/i).closest('.card'); 
+
+    const addToCartButton = within(productCard).getByText(/Add To Cart/);
+    
+    fireEvent.click(addToCartButton);
 
 
     await waitFor(() => {
