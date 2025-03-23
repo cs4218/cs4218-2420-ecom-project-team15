@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import DropIn from "braintree-web-drop-in-react";
 import { AiFillWarning } from "react-icons/ai";
 import axios from "axios";
-import toast, { ErrorIcon } from "react-hot-toast";
+import toast from 'react-hot-toast'; 
 import "../styles/CartStyles.css";
 
 const CartPage = () => {
@@ -78,7 +78,7 @@ const CartPage = () => {
       localStorage.removeItem("cart");
       setCart([]);
       navigate("/dashboard/user/orders");
-      toast.success("Payment Completed Successfully ");
+      toast.success("Payment Completed Successfully");
     } catch (error) {
       console.error("Error processing payment:", error);
       setLoading(false);
