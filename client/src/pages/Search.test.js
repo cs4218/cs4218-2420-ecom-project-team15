@@ -1,9 +1,10 @@
 import React from "react";
-import { render, screen, act } from "@testing-library/react";
+import { render, screen, act, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { SearchProvider } from "../context/search";
 import Search from "../pages/Search";
 import "@testing-library/jest-dom/extend-expect";
+import { useSearch } from "../context/search";
 
 jest.mock("axios");
 
@@ -19,7 +20,23 @@ jest.mock("../context/search", () => ({
   useSearch: jest.fn(() => [{ keyword: "", results: []}, jest.fn()]), // Mock useSearch hook to return null state and a mock function
 }));
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: jest.fn(), // Mock useNavigate here
+}));
+
 describe("Search Page Component", () => {
+  beforeEach(() => {
+    global.matchMedia =
+      global.matchMedia ||
+      function () {
+        return {
+          matches: false,
+          addListener: jest.fn(),
+          removeListener: jest.fn(),
+        };
+      };
+  });
   it("renders search page without crashing", async () => {
     await act(async () => {
       render(
@@ -136,5 +153,73 @@ describe("Search Page Component", () => {
     const image = screen.getByAltText("Apple Watch");
     expect(image).toBeInTheDocument();
     expect(image).toHaveAttribute("src", "/api/v1/product/product-photo/5");
+  });
+
+  it("adds an item to the cart when 'Add To Cart' button is clicked", async () => {
+    require("../context/search").useSearch.mockReturnValue([
+      {
+        keyword: "Laptop",
+        results: [
+          { _id: "1", name: "MacBook Pro", description: "Apple laptop", price: 1200 },
+        ],
+      },
+      jest.fn(),
+    ]);
+
+    const setCartMock = jest.fn(); // Mock the setCart function
+
+    require("../context/cart").useCart.mockReturnValue([[], setCartMock]);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Search />
+        </MemoryRouter>
+      );
+    });
+
+    // Find the 'Add To Cart' button and simulate a click
+    const addToCartButton = screen.getByText("Add To Cart");
+    fireEvent.click(addToCartButton);
+
+    // Verify that the setCart function was called with the correct product
+    await waitFor(() => {
+      expect(setCartMock).toHaveBeenCalledWith([
+        { _id: "1", name: "MacBook Pro", description: "Apple laptop", price: 1200 },
+      ]);
+    });
+  });
+
+  it("navigates to the product details page when 'More Details' button is clicked", async () => {
+    const navigateMock = jest.fn();
+    require("react-router-dom").useNavigate.mockImplementation(() => navigateMock);
+
+    // Mock search data for the test
+    useSearch.mockReturnValue([
+      {
+        keyword: "Phone",
+        results: [
+          { _id: "2", name: "iPhone 14", description: "Apple phone", price: 999, slug: "iphone-14" },
+        ],
+      },
+      jest.fn(),
+    ]);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Search />
+        </MemoryRouter>
+      );
+    });
+
+    // Simulate a click on the 'More Details' button
+    const moreDetailsButton = screen.getByText("More Details");
+    fireEvent.click(moreDetailsButton);
+
+    // Wait for navigation to be called and verify it's with the correct path
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith("/product/iphone-14");
+    });
   });
 });

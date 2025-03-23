@@ -671,5 +671,4 @@ describe("CartPage Component", () => {
     });
   });
   
-  
 });

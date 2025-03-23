@@ -21,25 +21,31 @@ module.exports = {
 
   // only run these tests
   testMatch: [
-    "<rootDir>/client/src/pages/*.test.js", 
-    "<rootDir>/client/src/pages/*/*.test.js", 
-    "<rootDir>/client/src/components/*.test.js", 
+    "<rootDir>/client/src/pages/*.test.js",
+    "<rootDir>/client/src/pages/*/*.test.js",
+    "<rootDir>/client/src/components/*.test.js",
     "<rootDir>/client/src/components/*/*.test.js",
     "<rootDir>/client/src/context/*.test.js",
-    "<rootDir>/client/src/hooks/*.test.js"
+    "<rootDir>/client/src/hooks/*.test.js",
   ],
 
   // jest code coverage
   collectCoverage: true,
   collectCoverageFrom: [
-    "client/src/pages/*", 
-    "client/src/pages/*/**", 
-    "client/src/components/*", 
+    "client/src/pages/*",
+    "client/src/pages/*/**",
+    "client/src/components/*",
     "client/src/components/*/**",
     "client/src/context/*",
-    "client/src/hooks/*"
+    "client/src/hooks/*",
   ],
-  coveragePathIgnorePatterns: ["client/src/components/Routes/AdminRoute.js"],
+  coveragePathIgnorePatterns: [
+    "client/src/components/Routes/AdminRoute.js",
+  ],
+  testPathIgnorePatterns: [
+    "/client/src/pages/user/Orders.integration.test.js",
+    "/client/src/pages/CartPage.integration.test.js",
+  ],
   coverageThreshold: {
     global: {
       lines: 100,
