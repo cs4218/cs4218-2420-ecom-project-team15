@@ -206,9 +206,9 @@ export const updateProductController = async (req, res) => {
     }
     await products.save();
     res.status(200).send({
-    success: true,
-    message: "Product Updated Successfully",
-    products,
+      success: true,
+      message: "Product Updated Successfully",
+      products,
     });
   } catch (error) {
     console.log(error);
@@ -388,12 +388,16 @@ export const brainTreePaymentController = async (req, res) => {
         },
       },
       function (error, result) {
+        console.log(`result: ${result}`)
         if (result) {
           const order = new orderModel({
             products: cart,
             payment: result,
             buyer: req.user._id,
-          }).save();
+          })
+          console.log(order)
+          order.save()
+
           res.json({ ok: true });
         } else {
           res.status(500).send(error);
