@@ -29,6 +29,7 @@ test('Renders orders and able to change order status', async ({ page }) => {
   await page.getByText('Not Processed').first().click();
   await page.getByTitle('Processing').locator('div').click();
   await expect(page.getByRole('main')).toContainText('Processing');
+  await page.waitForTimeout(2000);
   await page.locator('#root').getByTitle('Processing').click();
   await page.getByText('Not Processed').nth(3).click();
   await expect(page.getByRole('main')).toContainText('Not Processed');
