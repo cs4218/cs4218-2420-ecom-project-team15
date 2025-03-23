@@ -46,3 +46,11 @@ nvm use 23
 ...
 ```
 _NOTE: Adding this in may cause the tests to fail due to ESM syntax. To execute the tests without issue, do not insert this configuration._
+
+<h2>Instructions for Integration and UI tests</h2>
+
+1. UI tests under tests/ folder should be run individually and sequentially. This is to avoid race conditions which will affect the tests.
+
+2. The following frontend - controller integration tests require the app to be running with ```npm run dev```.
+- CreateCategory.integration.test.js
+- CreateProduct.integration.test.js
