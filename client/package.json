@@ -49,5 +49,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "mongoose": "^8.12.2",
+    "supertest": "^7.1.0"
   }
 }

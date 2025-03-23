@@ -5,6 +5,11 @@ import '@testing-library/jest-dom/extend-expect';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
+// Mock Cart context
+jest.mock("../context/cart", () => ({
+    useCart: jest.fn(() => [null, jest.fn()]),
+}));
+
 // Mocking dependencies
 jest.mock('axios');
 jest.mock('react-router-dom', () => ({
@@ -60,10 +65,6 @@ describe('ProductDetails Component', () => {
 
     afterAll(() => {
         console.log.mockRestore();
-    });
-
-    afterEach(() => {
-        console.log.mockClear();
     });
 
     it('should render component successfully', async () => {
