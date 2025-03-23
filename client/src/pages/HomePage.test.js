@@ -234,7 +234,7 @@ describe("HomePage Component", () => {
     await waitFor(() => {
       expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
         checked: [],
-        radio: [100, Infinity],
+        radio: [100, "Infinity"],
       });
     });
 
@@ -246,12 +246,19 @@ describe("HomePage Component", () => {
       if (url.includes("/api/v1/product/product-list/1")) {
         return Promise.resolve({
           data: {
-            products: [{ _id: "113", name: "Asus Laptop", description: "Gaming Laptop", price: 1500 }],
+            products: [
+              { _id: "101", name: "Smartphone", price: 999, description: "Latest model", slug: "smartphone" },
+              { _id: "102", name: "Laptop", price: 1500, description: "Powerful machine", slug: "laptop" },
+              { _id: "103", name: "Smartphone2", price: 999, description: "Latest model", slug: "smartphone" },
+              { _id: "104", name: "Asus Laptop", price: 1500, description: "Powerful machine", slug: "laptop" },
+              { _id: "105", name: "Smartphone3", price: 999, description: "Latest model", slug: "smartphone" },
+              { _id: "106", name: "Laptop3", price: 1500, description: "Powerful machine", slug: "laptop" },
+            ],
           },
         });
       }
       if (url.includes("/api/v1/product/product-count")) {
-        return Promise.resolve({ data: { total: 3 } });
+        return Promise.resolve({ data: { total: 8 } });
       }
     });
 
@@ -687,7 +694,7 @@ describe("HomePage Component", () => {
     await waitFor(() => {
       expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
         checked: ["1"], 
-        radio: [100, Infinity], 
+        radio: [100, "Infinity"], 
       });
     });
   });

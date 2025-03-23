@@ -68,7 +68,9 @@
       "jest.setup.js",
       "/client/src/pages/user/Profile.integration.test.js",
       "/client/src/pages/admin/CreateCategory.integration.test.js",
-      "/client/src/pages/admin/CreateProduct.integration.test.js"
+      "/client/src/pages/admin/CreateProduct.integration.test.js",
+      "/client/src/pages/user/Orders.integration.test.js",
+      "/client/src/pages/CartPage.integration.test.js"
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!(styleMock\\.js)$)"
