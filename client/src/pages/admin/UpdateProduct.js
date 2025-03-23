@@ -71,7 +71,17 @@ const UpdateProduct = () => {
       productData.append("description", description);
       productData.append("price", price);
       productData.append("quantity", quantity);
-      photo && productData.append("photo", photo);
+      if (!photo) {
+        const { data, headers } = await axios.get(`/api/v1/product/product-photo/${id}`, {
+          responseType: "blob"
+        });
+        const photoFile = new File([data], "product.jpg", {
+          type: headers["content-type"]
+        });
+        productData.append("photo", photoFile);
+      } else {
+        productData.append("photo", photo);
+      }
       productData.append("category", category);
       productData.append("shipping", shipping);
       if (price <= 0) {
