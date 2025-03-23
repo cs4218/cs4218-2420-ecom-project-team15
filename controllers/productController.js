@@ -21,8 +21,7 @@ const gateway = new braintree.BraintreeGateway({
 export const createProductController = async (req, res) => {
   try {
     // changed due to SonarQube suggestion: Remove this useless assignment to variable "shipping".
-    const { name, description, price, category, quantity } =
-      req.fields;
+    const { name, description, price, category, quantity } = req.fields;
     const { photo } = req.files;
     //alidation
     switch (true) {
@@ -37,9 +36,7 @@ export const createProductController = async (req, res) => {
       case !quantity:
         return res.status(400).send({ error: "Quantity is Required" });
       case photo && photo.size > 1000000:
-        return res
-          .status(400)
-          .send({ error: "Photo should be less then 1mb" });
+        return res.status(400).send({ error: "Photo should be less then 1mb" });
       case !photo:
         return res.status(400).send({ error: "Photo is Required" });
     }
@@ -168,8 +165,7 @@ export const deleteProductController = async (req, res) => {
 export const updateProductController = async (req, res) => {
   try {
     // changed due to SonarQube suggestion: Remove this useless assignment to variable "shipping".
-    const { name, description, price, category, quantity } =
-      req.fields;
+    const { name, description, price, category, quantity } = req.fields;
     const { photo } = req.files;
     //validation
     switch (true) {
@@ -184,9 +180,7 @@ export const updateProductController = async (req, res) => {
       case !quantity:
         return res.status(400).send({ error: "Quantity is Required" });
       case photo && photo.size > 1000000:
-        return res
-          .status(400)
-          .send({ error: "Photo should be less than 1mb" });
+        return res.status(400).send({ error: "Photo should be less than 1mb" });
       case !photo:
         return res.status(400).send({ error: "Photo is Required" });
     }
@@ -379,7 +373,7 @@ export const brainTreePaymentController = async (req, res) => {
     cart.map((i) => {
       total += i.price;
     });
-    let newTransaction = gateway.transaction.sale(
+    let newTransaction = await gateway.transaction.sale(
       {
         amount: total,
         paymentMethodNonce: nonce,
@@ -387,16 +381,14 @@ export const brainTreePaymentController = async (req, res) => {
           submitForSettlement: true,
         },
       },
-      function (error, result) {
-        console.log(`result: ${result}`)
+      async function (error, result) {
         if (result) {
           const order = new orderModel({
             products: cart,
             payment: result,
             buyer: req.user._id,
-          })
-          console.log(order)
-          order.save()
+          });
+          await order.save();
 
           res.json({ ok: true });
         } else {

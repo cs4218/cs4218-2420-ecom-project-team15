@@ -6,7 +6,9 @@ export const createCategoryController = async (req, res) => {
     if (!name) {
       return res.send({ message: "Name is required" });
     }
-    const existingCategory = await categoryModel.findOne({ name: { $regex: new RegExp(`^${name.trim()}$`, 'i') } });
+    const existingCategory = await categoryModel.findOne({
+      name: { $regex: new RegExp(`^${name.trim()}$`, "i") },
+    });
     if (existingCategory) {
       return res.status(200).send({
         success: true,
@@ -42,8 +44,8 @@ export const updateCategoryController = async (req, res) => {
     }
 
     const existingCategory = await categoryModel.findOne({
-      name: { $regex: new RegExp(`^${name.trim()}$`, 'i') },
-      _id: { $ne: id }
+      name: { $regex: new RegExp(`^${name.trim()}$`, "i") },
+      _id: { $ne: id },
     });
 
     if (existingCategory) {
@@ -83,7 +85,6 @@ export const getAllCategoryController = async (req, res) => {
       category,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).send({
       success: false,
       error,

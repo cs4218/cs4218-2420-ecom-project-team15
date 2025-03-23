@@ -48,7 +48,7 @@ describe("CreateCategory Component", () => {
             await waitFor(() => {
                 expect(screen.getByText('integrationTestCategory')).toBeInTheDocument();
             })
-    
+
             await act(async () => {
                 const testCategoryRow = screen.getByText('integrationTestCategory').closest('tr');
                 if (testCategoryRow) {
@@ -56,15 +56,15 @@ describe("CreateCategory Component", () => {
                     fireEvent.click(editButton);
                 }
             });
-    
+
             await act(async () => {
                 fireEvent.change(screen.getByDisplayValue("integrationTestCategory"), {
                     target: { value: "integrationTestCategory2" },
                 });
-    
+
                 fireEvent.click(screen.getAllByText("Submit")[1]);
             });
-    
+
             await waitFor(() => {
                 expect(toast.success).toHaveBeenCalled();
                 expect(screen.getByText('integrationTestCategory2')).toBeInTheDocument();
@@ -72,13 +72,13 @@ describe("CreateCategory Component", () => {
             })
         });
     })
-    
+
     describe("Deleting categories", () => {
         test("handles category deletion successfully", async () => {
             await waitFor(() => {
                 expect(screen.getByText('integrationTestCategory2')).toBeInTheDocument();
             })
-    
+
             await act(async () => {
                 const testCategoryRow = screen.getByText('integrationTestCategory2').closest('tr');
                 if (testCategoryRow) {
