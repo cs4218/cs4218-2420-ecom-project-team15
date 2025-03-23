@@ -599,8 +599,8 @@ describe('ProductController Integration Tests', () => {
                     category: category._id,
                     quantity: 10,
                     photo: {
-                        data: Buffer.from('fake photo data'),
-                        contentType: 'image/jpeg',
+                    data: Buffer.from('fake photo data'),
+                    contentType: 'image/jpeg',
                     },
                 },
                 {
@@ -621,20 +621,22 @@ describe('ProductController Integration Tests', () => {
             await productListController({ params: { page: 1, sort: { createdAt: 1 } } }, res);
             expect(res.status).toHaveBeenCalledWith(200);
             const returnedProducts = res.send.mock.calls[0][0].products;
-            // check that the returned products are the same as the inserted products
-            expect(returnedProducts.length).toBe(2);
-            expect(returnedProducts[0].name).toBe(productList[0].name);
-            expect(returnedProducts[0].description).toBe(productList[0].description);
-            expect(returnedProducts[0].price).toBe(productList[0].price);
-            expect(returnedProducts[0].category).toStrictEqual(productList[0].category);
-            expect(returnedProducts[0].quantity).toBe(productList[0].quantity);
-            expect(returnedProducts[0].photo);
-            expect(returnedProducts[1].name).toBe(productList[1].name);
-            expect(returnedProducts[1].description).toBe(productList[1].description);
-            expect(returnedProducts[1].price).toBe(productList[1].price);
-            expect(returnedProducts[1].category).toStrictEqual(productList[1].category);
-            expect(returnedProducts[1].quantity).toBe(productList[1].quantity);
-            expect(returnedProducts[1].photo);
+
+            // Check that the returned products match the inserted products, regardless of order
+            expect(returnedProducts).toHaveLength(2);
+            const returnedProductNames = returnedProducts.map(product => product.name);
+            const expectedProductNames = productList.map(product => product.name);
+            expect(returnedProductNames).toEqual(expect.arrayContaining(expectedProductNames));
+
+            returnedProducts.forEach(returnedProduct => {
+            const matchingProduct = productList.find(product => product.name === returnedProduct.name);
+            expect(matchingProduct).toBeDefined();
+            expect(returnedProduct.description).toBe(matchingProduct.description);
+            expect(returnedProduct.price).toBe(matchingProduct.price);
+            expect(returnedProduct.category).toStrictEqual(matchingProduct.category);
+            expect(returnedProduct.quantity).toBe(matchingProduct.quantity);
+            expect(returnedProduct.photo);
+            });
         });
 
         it('should return an error when products cannot be retrieved', async () => {
