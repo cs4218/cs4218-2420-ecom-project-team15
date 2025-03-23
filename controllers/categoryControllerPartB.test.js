@@ -41,7 +41,7 @@ describe("Create Category Controller Tests", () => {
     expect(res.status).toBeCalledWith(200);
     expect(res.send).toBeCalledWith({
       success: true,
-      message: "Category Already Exists",
+      message: "Category already exists",
     });
   });
 
@@ -58,7 +58,7 @@ describe("Create Category Controller Tests", () => {
     expect(res.status).toBeCalledWith(201);
     expect(res.send).toBeCalledWith({
       success: true,
-      message: "new category created",
+      message: "New category created",
       category: { name: "Test Category", slug: "Test Category" },
     });
   });

@@ -96,15 +96,15 @@ const Header = () => {
                       data-bs-toggle="dropdown"
                       style={{ border: "none" }}
                       test-id="username"
+                      data-testid="user-dropdown"
                     >
                       {auth?.user?.name}
                     </NavLink>
-                    <ul className="dropdown-menu">
+                    <ul className="dropdown-menu" data-testid="user-dropdown-menu">
                       <li>
                         <NavLink
-                          to={`/dashboard/${
-                            auth?.user?.role === 1 ? "admin" : "user"
-                          }`}
+                          to={`/dashboard/${auth?.user?.role === 1 ? "admin" : "user"
+                            }`}
                           className="dropdown-item"
                         >
                           Dashboard

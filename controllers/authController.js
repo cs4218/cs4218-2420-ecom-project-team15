@@ -245,17 +245,67 @@ export const orderStatusController = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
-    const orders = await orderModel.findByIdAndUpdate(
-      orderId,
-      { status },
-      { new: true }
-    );
+    const orders = await orderModel.findByIdAndUpdate(orderId, { status }, { new: true, runValidators: true });
     res.json(orders);
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
       message: "Error While Updating Order",
+      error,
+    });
+  }
+};
+
+export const createOrderController = async (req, res) => {
+  try {
+    // Destructure the request body to get the products, payment, buyer, and status
+    const { products, payment, buyer, status } = req.body;
+    const newOrder = new orderModel({
+      products, // Array of product ObjectIds
+      payment,
+      buyer,
+      status: status || "Not Processed", // Default status if not provided
+    });
+
+    // Save the order to the database
+    await newOrder.save();
+
+    // Respond with the newly created order
+    res.status(201).json(newOrder);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error While Creating Order",
+      error,
+    });
+  }
+};
+
+export const deleteOrderController = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    // Find and delete the order
+    const deletedOrder = await orderModel.findByIdAndDelete(orderId);
+
+    if (!deletedOrder) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Order deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error while deleting order",
       error,
     });
   }

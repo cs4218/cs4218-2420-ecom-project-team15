@@ -43,6 +43,6 @@ describe("Categories page", () => {
       </BrowserRouter>
     );
 
-    await expect(screen.queryAllByTestId("categories")).toEqual([])
+    await expect(screen.queryAllByTestId("categories-div")).toEqual([])
   })
 })
