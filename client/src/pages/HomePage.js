@@ -39,7 +39,7 @@ const HomePage = () => {
         setCategories([]);
         return;
       }
-  
+
       const { data } = response;
       if (!data.success || !Array.isArray(data.category)) {
         console.warn("No categories found or invalid data format");
