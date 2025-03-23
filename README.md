@@ -33,24 +33,29 @@ npm run test:backend
 ```
 
 4. If you would like to run the application, but encounter an error, check that you are running **the latest version of Node**. If you are not, run the following commands:
+
 ```
 node -v //should be v23.9.0
 nvm install node
 nvm use 23
 ```
 
-5. If it still doesn't work, you may need to include the following line under the ```package.json``` file:
+5. If it still doesn't work, you may need to include the following line under the `package.json` file:
+
 ```
 "name": "ecom",
 "type": "module", //insert this line
 ...
 ```
+
 _NOTE: Adding this in may cause the tests to fail due to ESM syntax. To execute the tests without issue, do not insert this configuration._
 
 <h2>Instructions for Integration and UI tests</h2>
 
 1. UI tests under tests/ folder should be run individually and sequentially. This is to avoid race conditions which will affect the tests.
 
-2. The following frontend - controller integration tests require the app to be running with ```npm run dev```.
+2. The following frontend - controller integration tests require the app to be running with `npm run dev`.
+
 - CreateCategory.integration.test.js
 - CreateProduct.integration.test.js
+- Categories.integration.test.js
