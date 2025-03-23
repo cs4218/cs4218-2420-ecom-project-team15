@@ -39,7 +39,10 @@ describe("ProductCategoryController Integration Tests", () => {
                 price: 1200,
                 category: testCategory._id,
                 quantity: 10,
-                shipping: true
+                shipping: true,
+                photo: {
+                    data: Buffer.from("photo data")
+                }
             },
             {
                 name: "Smartphone",
@@ -48,7 +51,10 @@ describe("ProductCategoryController Integration Tests", () => {
                 price: 800,
                 category: testCategory._id,
                 quantity: 15,
-                shipping: false
+                shipping: false,
+                photo: {
+                    data: Buffer.from("photo data")
+                }
             }
         ]);
     });
@@ -110,7 +116,10 @@ describe("SearchProductController Integration Tests", () => {
                 price: 1200,
                 category: testCategory._id,
                 quantity: 10,
-                shipping: true
+                shipping: true,
+                photo: {
+                    data: Buffer.from("photo data")
+                }
             },
             {
                 name: "Smartphone",
@@ -119,7 +128,10 @@ describe("SearchProductController Integration Tests", () => {
                 price: 800,
                 category: testCategory._id,
                 quantity: 15,
-                shipping: false
+                shipping: false,
+                photo: {
+                    data: Buffer.from("photo data")
+                }
             }
         ]);
     });
@@ -193,7 +205,10 @@ describe("RelatedProductController Integration Tests", () => {
                 price: 1200,
                 category: testCategory._id,
                 quantity: 10,
-                shipping: true
+                shipping: true,
+                photo: {
+                    data: Buffer.from("photo data")
+                }
             },
             {
                 name: "Smartphone",
@@ -202,7 +217,10 @@ describe("RelatedProductController Integration Tests", () => {
                 price: 800,
                 category: testCategory._id,
                 quantity: 15,
-                shipping: false
+                shipping: false,
+                photo: {
+                    data: Buffer.from("photo data")
+                }
             }
         ]);
     });
