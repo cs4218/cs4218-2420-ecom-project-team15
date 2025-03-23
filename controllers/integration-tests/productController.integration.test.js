@@ -618,7 +618,7 @@ describe('ProductController Integration Tests', () => {
             ];
             await Product.insertMany(productList);
 
-            await productListController({ params: { page: 1 } }, res);
+            await productListController({ params: { page: 1, sort: { createdAt: 1 } } }, res);
             expect(res.status).toHaveBeenCalledWith(200);
             const returnedProducts = res.send.mock.calls[0][0].products;
             // check that the returned products are the same as the inserted products
