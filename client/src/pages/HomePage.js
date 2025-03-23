@@ -39,15 +39,15 @@ const HomePage = () => {
         setCategories([]);
         return;
       }
-  
+
       const { data } = response;
       if (!data.success || !Array.isArray(data.category)) {
         console.warn("No categories found or invalid data format");
         setCategories([]);
         return;
       }
-  
-      setCategories(data.category); 
+
+      setCategories(data.category);
     } catch (error) {
       console.error("Error fetching categories:", error);
       setCategories([]);
@@ -59,59 +59,58 @@ const HomePage = () => {
     getTotal();
   }, []);
 
-  //get products
-const getAllProducts = async () => {
-  try {
-    setLoading(true);
-    const response = await axios.get(`/api/v1/product/product-list/${page}`);
-    
-    if (!response || !response.data) {
-      console.warn("Invalid response: No data received");
-      setProducts([]); 
-      return;
+  // Fetch products
+  const getAllProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`/api/v1/product/product-list/${page}`);
+      if (!response || !response.data) {
+        console.warn("Invalid response: No data received");
+        setProducts([]);
+        return;
+      }
+
+      const { data } = response;
+
+      if (!Array.isArray(data.products)) {
+        console.warn("Invalid product list received:", data.products);
+        setProducts([]);
+        return;
+      }
+
+      setProducts(data.products);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const { data } = response;
-
-    if (!Array.isArray(data.products)) {
-      console.warn("Invalid product list received:", data.products);
-      setProducts([]); 
-      return;
-    }
-
-    setProducts(data.products); 
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    setProducts([]); 
-  } finally {
-    setLoading(false); 
-  }
-};
-
-
-  //getTOtal COunt
+  // Get total product count
   const getTotal = async () => {
     try {
       const response = await axios.get("/api/v1/product/product-count");
-  
       if (!response || !response.data) {
         console.warn("Invalid response: No data received");
         setTotal(0);
         return;
       }
-  
+
       const { data } = response;
-  
+
       if (typeof data.total !== "number") {
         console.warn("Invalid product count received:", data.total);
         setTotal(0);
         return;
       }
-  
-      setTotal(data.total); 
+
+      setTotal(data.total);
+      setFilteredTotal(data.total); // Set filtered total to total initially
     } catch (error) {
       console.error("Error fetching product count:", error);
-      setTotal(0); 
+      setTotal(0);
+      setFilteredTotal(0);
     }
   };
 
@@ -119,7 +118,8 @@ const getAllProducts = async () => {
     if (page === 1) return;
     loadMore();
   }, [page]);
-  //load more
+
+  // Load more products
   const loadMore = async () => {
     try {
       setLoading(true);
@@ -142,7 +142,6 @@ const getAllProducts = async () => {
     }
     setChecked(all);
   };
-
   useEffect(() => {
     if (!checked.length && !radio.length) {
       getAllProducts(); 
@@ -161,12 +160,14 @@ const getAllProducts = async () => {
         checked,
         radio,
       });
+
       setProducts(data?.products);
       setFilteredTotal(data?.total); 
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <Layout title={"All Products - Best Offers "}>
       <img
@@ -214,7 +215,7 @@ const getAllProducts = async () => {
               <div className="card m-2" key={p._id}>
                 {!imagesLoaded[p._id] && (
                   <div className="image-placeholder">Loading...</div>
-                )}
+                )}                                
                 <img
                   src={`/api/v1/product/product-photo/${p._id}`}
                   className="card-img-top"
