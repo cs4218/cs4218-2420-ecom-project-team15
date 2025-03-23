@@ -2,14 +2,12 @@
  * @jest-environment node
  */
 
-import axios from "axios";
 import userModel from "../../../../models/userModel";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import app from "../../../../server";
 import supertest from 'supertest';
 import '@testing-library/jest-dom/extend-expect';
-import { expect } from "@playwright/test";
 
 dotenv.config();
 
@@ -26,8 +24,6 @@ jest.mock('../../context/search', () => ({
 }));  
 
 jest.mock('../../hooks/useCategory', () => jest.fn(() => []));
-
-jest.spyOn(axios, "post");
 
 describe("Register Component", () => {
   beforeAll(async () => {
