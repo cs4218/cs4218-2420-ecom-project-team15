@@ -87,7 +87,7 @@ describe("getAllCategoryController", () => {
     });
 });
 
-describe("getAllCategoryController", () => {
+describe("singleCategoryController", () => {
     let mongoServer;
 
     beforeAll(async () => {
