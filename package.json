@@ -72,7 +72,8 @@
       "/client/src/pages/admin/CreateProduct.integration.test.js",
       "client/src/pages/Categories.integration.test.js",
       "/client/src/pages/user/Orders.integration.test.js",
-      "/client/src/pages/CartPage.integration.test.js"
+      "/client/src/pages/CartPage.integration.test.js",
+      "/client/src/pages/Auth/Register.integration.test.js"
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!(styleMock\\.js)$)"
