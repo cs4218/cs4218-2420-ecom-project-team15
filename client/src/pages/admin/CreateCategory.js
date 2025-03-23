@@ -19,7 +19,7 @@ const CreateCategory = () => {
         name,
       });
       if (data?.success) {
-        toast.success(`${name} is created`);
+        toast.success(`${data.message}`);
         getAllCategory();
       } else {
         toast.error(data.message);
