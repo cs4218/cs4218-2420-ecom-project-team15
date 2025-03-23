@@ -7,7 +7,7 @@ import "@testing-library/jest-dom/extend-expect";
 import toast from "react-hot-toast";
 
 axios.defaults.baseURL = 'http://localhost:6060';
-axios.defaults.headers.common['Authorization'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2E4YmQzYzdiODBhNDc2NjFhOGUwM2YiLCJpYXQiOjE3NDI1NjQyNzUsImV4cCI6MTc0MzE2OTA3NX0.lrzkaAK5rYHG96YZhNBjNrjWnDvMSlYNna-eTdQoc1U';
+axios.defaults.headers.common['Authorization'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2RmOWRkZDczNDQ4MmE3NWUzODMyMDgiLCJpYXQiOjE3NDI3Mjg4NDQsImV4cCI6MTc0MzMzMzY0NH0.yVBQ2vX9zTeyI7uik-KLso5XbibHhE3mgportbZ8fik';
 
 jest.mock("react-hot-toast");
 

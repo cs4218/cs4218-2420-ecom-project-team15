@@ -48,6 +48,7 @@ test('should add, update and delete a product in one flow', async ({ page }) => 
     await page.getByPlaceholder('write a Price').click();
     await page.getByPlaceholder('write a Price').fill('30');
     await page.getByRole('button', { name: 'UPDATE PRODUCT' }).click();
+    await page.waitForURL("http://localhost:3000/dashboard/admin/products");
 
     await page.getByText('testingProduct2').click();
     await expect(page.getByRole('textbox', { name: 'write a name' })).toHaveValue("testingProduct2");
