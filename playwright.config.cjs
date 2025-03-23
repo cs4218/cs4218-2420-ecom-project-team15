@@ -31,6 +31,7 @@ module.exports = defineConfig({
     trace: 'on-first-retry',
   },
   testIgnore: ['**/tests/example.spec.cjs ', '**/tests/trial.spec.cjs', '**/tests/user.spec.cjs', '**/tests-examples/**'],
+
   /* Configure projects for major browsers */
   projects: [
     {

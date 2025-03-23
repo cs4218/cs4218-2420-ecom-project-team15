@@ -662,11 +662,10 @@ describe("CartPage Component", () => {
       );
     });
   
-    const loginButton = screen.getByText(/Plase login to checkout/i); 
+    const loginButton = screen.getByRole("button", { name: /Please login to checkout/i });
     expect(loginButton).toBeInTheDocument();
   
     fireEvent.click(loginButton);
-  
     await waitFor(() => {
       expect(mockedUseNavigate).toHaveBeenCalledWith("/login", { state: "/cart" });
     });

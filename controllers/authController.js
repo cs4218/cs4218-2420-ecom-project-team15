@@ -174,7 +174,9 @@ export const updateProfileController = async (req, res) => {
     const user = await userModel.findById(req.user._id);
     //password
     if (password && password.length < 6) {
-      return res.status(400).json({ error: "Passsword is required to be at least 6 characters long" });
+      return res.status(400).json({ error: "Password is required to be at least 6 characters long" });
+    } else if (phone && !/^\d+$/.test(phone)) {
+      return res.status(400).json({ error: "Phone number must be numerical" });
     }
     const hashedPassword = password ? await hashPassword(password) : undefined;
     const updatedUser = await userModel.findByIdAndUpdate(
